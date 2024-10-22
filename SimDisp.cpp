@@ -61,13 +61,11 @@ private:
 	class BaseOf_Window(GraphPanel) {
 		SFINAE_Window(GraphPanel);
 		SiDiWindow &parent;
-
 		CComPtr<ID2D1Factory> D2D_Factory;
 		CComPtr<IWICImagingFactory> WIC_Factory;
 		CComPtr<ID2D1HwndRenderTarget> RenderTarget;
 		CComPtr<IWICBitmap> wicBitmap;
 		CComPtr<ID2D1Bitmap> D2D_bitmap;
-
 		class MyBitmap : public IWICBitmapLock {
 			LSize size = { GetSystemMetrics(SM_CXSCREEN) + 1, GetSystemMetrics(SM_CYSCREEN) + 1 };
 			File bmpBuff = File()
@@ -205,13 +203,18 @@ private:
 			assert(SUCCEEDED(RenderTarget->EndDraw()));
 		}
 		inline bool SaveToFile(LPCTSTR lpFilename) {
-			//try {
-			//	File file = File::Create(lpFilename).CreateAlways().Accesses(FileAccess::GenericWrite);
-			//	::SaveToFile(DC(), Palette::Default(), ClipBitmap(bmp, Size() + LSize(1)), file);
-			//	return true;
-			//} catch (WX::Exception err) {
-			//	parent.MsgBox(_T("Error"), err.operator String(), MB::IconError);
-			//}
+			try {
+				::SaveToFile(
+					DC(),
+					Palette::Default(),
+					ClipBitmap(
+						Bitmap::Create(MaxSize()).Colors(Buffer()),
+						Size()),
+					File::Create(lpFilename).CreateAlways().Accesses(FileAccess::GenericWrite));
+				return true;
+			} catch (WX::Exception err) {
+				parent.MsgBox(_T("Error"), err.operator String(), MB::IconError);
+			}
 			return false;
 		}
 		inline void *Buffer() {
@@ -438,15 +441,11 @@ private:
 			}
 			inline void OnCommand(int id, HWND hwndCtl, UINT codeNotify) {
 				switch (id) {
-					case IDOK:
-						try {
-							LSize sz = { Item(IDE_CX).Int(), Item(IDE_CY).Int() };
-							if (size != sz) size = sz;
-							else id = IDCANCEL;
-						} catch (...) {
-							MsgBox(_T("Failed"), _T("Invalid input"), MB::IconError);
-							id = IDCANCEL;
-						}
+					case IDOK: {
+						LSize sz = { Item(IDE_CX).Int(), Item(IDE_CY).Int() };
+						if (size != sz) size = sz;
+						else id = IDCANCEL;
+					}
 					case IDCANCEL:
 						End(id);
 						break;
@@ -455,6 +454,10 @@ private:
 				}
 			}
 			inline void OnClose() reflect_to(End(IDCANCEL));
+			inline void OnError(const Exception &err) {
+				MsgBox(_T("Failed"), _T("Invalid input"), MB::IconError);
+				End(IDCANCEL);
+			}
 #pragma endregion
 		} rsBox = panel.Size();
 		if (rsBox.Box(self) == IDOK)
@@ -557,19 +560,30 @@ protected:
 		pSidi->Update();
 		evtInited.Set();
 		Message msg;
-		while (msg.Get()) {
-			msg.Translate();
-			msg.Dispatch();
+	_msg_loop:
+		try {
+			while (msg.Get()) {
+				msg.Translate();
+				msg.Dispatch();
+			}
+		} catch (Exception err) {
+			switch (pSidi->MsgBox(_T("Error"), err.operator String(), MB::IconError | MB::AbortRetryIgnore)) {
+				case IDIGNORE:
+				case IDRETRY:
+					goto _msg_loop;
+				case IDABORT:
+					break;
+			}
 		}
 		CoUninitialize();
 	}
+#include <winerror.h>
 	inline void Catch(const Exception &err) {
 		bError = true;
 		evtInited.Set();
 		CoUninitialize();
 		if (!pSidi) return;
 		if (!*pSidi) return;
-		pSidi->MsgBox(_T("Error"), err.operator String(), MB::IconError);
 	}
 public:
 	~SiDiClient() reflect_to(Close());

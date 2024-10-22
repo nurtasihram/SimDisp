@@ -1,0 +1,3 @@
+[submodule "wx"]
+	path = wx
+	url = https://github.com/nurtasihram/wx_library.git
