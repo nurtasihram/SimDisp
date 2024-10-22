@@ -1,0 +1,132 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimDisp", "workspaces\SimDisp.vcxproj", "{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimDisp_test", "workspaces\SimDisp_test.vcxproj", "{7B9801CA-90FF-42E4-9828-8DA0342220AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E} = {1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8} = {D977C0AE-A9EE-467F-AE96-E4AD49702BF8}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WX_LIB", "WX_LIB", "{F4BA081C-B6BE-4EA7-87F9-783252A9BFFA}"
+	ProjectSection(SolutionItems) = preProject
+		wx\control.h = wx\control.h
+		wx\defs.h = wx\defs.h
+		wx\dialog.h = wx\dialog.h
+		wx\dll.inl = wx\dll.inl
+		wx\file.h = wx\file.h
+		wx\msg.inl = wx\msg.inl
+		wx\msg_ctl.inl = wx\msg_ctl.inl
+		wx\realtime.h = wx\realtime.h
+		wx\resource.h = wx\resource.h
+		wx\security.h = wx\security.h
+		wx\type.h = wx\type.h
+		wx\window.h = wx\window.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimRemote", "SimRemote", "{5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}"
+	ProjectSection(SolutionItems) = preProject
+		SimHost.h = SimHost.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimClient", "workspaces\SimClient.vcxproj", "{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250} = {D317B3B6-57D9-4688-BFCD-AF3815E79250}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimHost", "workspaces\SimHost.vcxproj", "{D317B3B6-57D9-4688-BFCD-AF3815E79250}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E} = {1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug LLVM|x64 = Debug LLVM|x64
+		Debug LLVM|x86 = Debug LLVM|x86
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release LLVM|x64 = Release LLVM|x64
+		Release LLVM|x86 = Release LLVM|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug LLVM|x86.Build.0 = Debug LLVM|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug|x64.ActiveCfg = Debug|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug|x64.Build.0 = Debug|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug|x86.ActiveCfg = Debug|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Debug|x86.Build.0 = Debug|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release LLVM|x64.ActiveCfg = Release LLVM|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release LLVM|x64.Build.0 = Release LLVM|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release LLVM|x86.ActiveCfg = Release LLVM|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release LLVM|x86.Build.0 = Release LLVM|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x64.ActiveCfg = Release|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x64.Build.0 = Release|x64
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x86.ActiveCfg = Release|Win32
+		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x86.Build.0 = Release|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x86.Build.0 = Debug LLVM|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x64.ActiveCfg = Debug|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x64.Build.0 = Debug|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x86.ActiveCfg = Debug|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x86.Build.0 = Debug|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x64.ActiveCfg = Release LLVM|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x64.Build.0 = Release LLVM|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x86.ActiveCfg = Release LLVM|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x86.Build.0 = Release LLVM|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x64.ActiveCfg = Release|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x64.Build.0 = Release|x64
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x86.ActiveCfg = Release|Win32
+		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x86.Build.0 = Release|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x86.Build.0 = Debug LLVM|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug|x64.ActiveCfg = Debug|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug|x64.Build.0 = Debug|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug|x86.ActiveCfg = Debug|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug|x86.Build.0 = Debug|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release LLVM|x64.ActiveCfg = Release LLVM|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release LLVM|x64.Build.0 = Release LLVM|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release LLVM|x86.ActiveCfg = Release LLVM|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release LLVM|x86.Build.0 = Release LLVM|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release|x64.ActiveCfg = Release|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release|x64.Build.0 = Release|x64
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release|x86.ActiveCfg = Release|Win32
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Release|x86.Build.0 = Release|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug LLVM|x86.Build.0 = Debug LLVM|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug|x64.ActiveCfg = Debug|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug|x64.Build.0 = Debug|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug|x86.ActiveCfg = Debug|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Debug|x86.Build.0 = Debug|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release LLVM|x64.ActiveCfg = Release LLVM|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release LLVM|x64.Build.0 = Release LLVM|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release LLVM|x86.ActiveCfg = Release LLVM|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release LLVM|x86.Build.0 = Release LLVM|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release|x64.ActiveCfg = Release|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release|x64.Build.0 = Release|x64
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release|x86.ActiveCfg = Release|Win32
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8} = {5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}
+		{D317B3B6-57D9-4688-BFCD-AF3815E79250} = {5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {43DAFE10-07D2-40B0-B65B-59A133ED7FA2}
+	EndGlobalSection
+EndGlobal
