@@ -55,13 +55,25 @@ public:
 			pBits += xMax;
 		}
 	}
-	inline void GetRect(WX::LRect r, uint32_t *lpBits) {
-		WX::LSize s = r.size();
+	inline void SetRect(WX::LRect r, const uint32_t *lpBits, uint32_t BytesPerLine) {
 		auto pBits = this->lpBits + r.left + r.top * xMax;
-		for (int y = 0; y < s.cy; ++y) {
-			auto lpLine = pBits;
-			for (int x = 0; x < s.cx; ++x)
-				*lpBits++ = *lpLine++;
+		for (int y = r.top; y <= r.bottom; ++y) {
+			auto lpSrc = lpBits;
+			auto lpDst = pBits;
+			for (int x = r.left; x <= r.right; ++x)
+				*lpDst++ = *lpSrc++;
+			(uint8_t *&)lpBits += BytesPerLine;
+			pBits += xMax;
+		}
+	}
+	inline void GetRect(WX::LRect r, uint32_t *lpBits, uint32_t BytesPerLine) {
+		auto pBits = this->lpBits + r.left + r.top * xMax;
+		for (int y = r.top; y <= r.bottom; ++y) {
+			auto lpSrc = pBits;
+			auto lpDst = lpBits;
+			for (int x = r.left; x <= r.right; ++x)
+				*lpDst++ = *lpSrc++;
+			(uint8_t *&)lpBits += BytesPerLine;
 			pBits += xMax;
 		}
 	}
