@@ -46,11 +46,10 @@ public:
 			*pBits++ = rgb;
 	}
 	inline void Fill(uint32_t rgb, WX::LRect r) {
-		WX::LSize s = r.size();
 		auto pBits = lpBits + r.left + r.top * xMax;
-		for (int y = 0; y < s.cy; ++y) {
+		for (int y = r.top; y <= r.bottom; ++y) {
 			auto lpLine = pBits;
-			for (int x = 0; x < s.cx; ++x)
+			for (int x = r.left; x <= r.right; ++x)
 				*lpLine++ = rgb;
 			pBits += xMax;
 		}
