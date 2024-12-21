@@ -39,9 +39,9 @@ void OnMouse(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKe
 	if (bClientBlocked) return;
 	eventBox.Post(SIDI_MSG::SetOnMouse, MAKEWPARAM(xPos, yPos), MAKELPARAM(zPos, force_cast<uint8_t>(MouseKeys)));
 }
-void OnDestroy() {
+void OnClose() {
 	while (bClientBlocked) {}
-	eventBox.Post(SIDI_MSG::SetOnDestroy);
+	eventBox.Post(SIDI_MSG::SetOnClose);
 	Message msg;
 	assert(msg.GetThread());
 }
@@ -72,7 +72,7 @@ void MainProc(DWORD clientBoxID) {
 						assert(eventBox.Create());
 						msg.Param(true, eventBox.ID());
 						SimDisp::SetOnMouse(OnMouse);
-						SimDisp::SetOnDestroy(OnDestroy);
+						SimDisp::SetOnClose(OnClose);
 						SimDisp::SetOnResize(OnResize);
 					}
 					else

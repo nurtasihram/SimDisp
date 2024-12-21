@@ -43,7 +43,7 @@ class SiDiHost {
 
 	Thread eventReq;
 	Event eventClose;
-	tSimDisp_OnDestroy lpfnOnDestroy = O;
+	tSimDisp_OnClose lpfnOnClose = O;
 	tSimDisp_OnMouse lpfnOnMouse = O;
 	tSimDisp_OnResize lpfnOnResize = O;
 	LThread eventBox = [&] {
@@ -51,9 +51,9 @@ class SiDiHost {
 		Message msg;
 		while (msg.GetThread())
 			switch (msg.ID<SIDI_MSG>()) {
-				case SIDI_MSG::SetOnDestroy:
-					if (lpfnOnDestroy)
-						lpfnOnDestroy();
+				case SIDI_MSG::SetOnClose:
+					if (lpfnOnClose)
+						lpfnOnClose();
 					eventClose.Set();
 					eventReq.Post(msg);
 					break;
@@ -89,7 +89,7 @@ public:
 		if (actionBox.StillActive()) actionBox.Terminate(), actionBox.Close();
 		actionDone.Reset();
 		actionBox.OnError([&](const Exception &err) {
-			MsgBox(_T("Error"), err.operator String(), MB::IconError);
+			MsgBox(Cats(_T("Thread error [PID:"), actionBox.ID(), _T("]")), err.operator String(), MB::IconError);
 			actionDone.Set();
 		});
 		assert(actionBox.Create().Security(InheritHandle));
@@ -97,7 +97,7 @@ public:
 		if (eventBox.StillActive()) actionBox.Terminate(), actionBox.Close();
 		actionDone.Reset();
 		eventBox.OnError([&](const Exception &err) {
-			MsgBox(_T("Error"), err.operator String(), MB::IconError);
+			MsgBox(Cats(_T("Thread error [PID:"), eventBox.ID(), _T("]")), err.operator String(), MB::IconError);
 			actionDone.Set();
 		});
 		assert(eventBox.Create());
@@ -121,7 +121,7 @@ public:
 			eventClose.WaitForSignal();
 		}
 	}
-	inline void SetOnDestroy(tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(this->lpfnOnDestroy = lpfnOnDestroy);
+	inline void SetOnClose(tSimDisp_OnClose lpfnOnClose) reflect_to(this->lpfnOnClose = lpfnOnClose);
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) reflect_to(this->lpfnOnMouse = lpfnOnMouse);
 	inline void SetOnResize(tSimDisp_OnResize lpfnOnResize) reflect_to(this->lpfnOnResize = lpfnOnResize);
 	inline Message &Send(SIDI_MSG msg, WPARAM wParam = 0, LPARAM lParam = 0) {
@@ -167,7 +167,7 @@ REG_FUNC(BOOL, AutoFlush, BOOL bEnable) reflect_as(lpSimHost->Send(SIDI_MSG::Aut
 REG_FUNC(BOOL, HideCursor, BOOL bHide) reflect_as(lpSimHost->Send(SIDI_MSG::HideCursor, bHide).ParamW<BOOL>());
 REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(lpSimHost->Send(SIDI_MSG::Resizeable, bEnable).ParamW<BOOL>());
 
-REG_FUNC(void, SetOnDestroy, tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(lpSimHost->SetOnDestroy(lpfnOnDestroy));
+REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose) reflect_to(lpSimHost->SetOnClose(lpfnOnClose));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(lpSimHost->SetOnMouse(lpfnOnMouse));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(lpSimHost->SetOnResize(lpfnOnResize));
 

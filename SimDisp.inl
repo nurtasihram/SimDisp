@@ -13,7 +13,7 @@ REG_FUNC(BOOL, AutoFlush, BOOL bEnable)
 REG_FUNC(BOOL, HideCursor, BOOL bHide)
 REG_FUNC(BOOL, Resizeable, BOOL bEnable)
 
-REG_FUNC(void, SetOnDestroy, tSimDisp_OnDestroy lpfnOnDestroy)
+REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose)
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse)
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize)
 

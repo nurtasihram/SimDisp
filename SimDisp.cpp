@@ -24,6 +24,7 @@
 
 #define DLL_EXPORTS
 #include "SimDisp.h"
+#include "winerror.h"
 
 #pragma region SimDisp
 
@@ -213,7 +214,7 @@ private:
 					File::Create(lpFilename).CreateAlways().Accesses(FileAccess::GenericWrite));
 				return true;
 			} catch (WX::Exception err) {
-				parent.MsgBox(_T("Error"), err.operator String(), MB::IconError);
+				parent.MsgBox(_T("Save to file error"), err.operator String(), MB::IconError);
 			}
 			return false;
 		}
@@ -295,10 +296,10 @@ private:
 		Move(rc);
 		return 1;
 	}
-	void(*pfnOnDestroy)() = O;
-	inline void OnDestroy() {
-		if (pfnOnDestroy)
-			pfnOnDestroy();
+	void(*pfnOnClose)() = O;
+	inline void OnClose() {
+		if (pfnOnClose)
+			pfnOnClose();
 		PostQuitMessage(0);
 	}
 	inline void OnSize(UINT state, int cx, int cy) {
@@ -455,14 +456,14 @@ private:
 			}
 			inline void OnClose() reflect_to(End(IDCANCEL));
 			inline void OnError(const Exception &err) {
-				MsgBox(_T("Failed"), _T("Invalid input"), MB::IconError);
+				MsgBox(_T("Dialog error"), _T("Invalid input"), MB::IconError);
 				End(IDCANCEL);
 			}
 #pragma endregion
 		} rsBox = panel.Size();
 		if (rsBox.Box(self) == IDOK)
 			if (!Resize(rsBox.size))
-				MsgBox(_T("Failed"), _T("Resize error"), MB::IconError);
+				MsgBox(_T("Dialog error"), _T("Resize failed"), MB::IconError);
 	}
 #pragma endregion
 public:
@@ -477,7 +478,7 @@ public:
 			.Filter(_T("Bitmap file (*.bmp)\0*.bmp*\0\0"));
 		if (!cf.SaveFile()) return false;
 		if (PrintScreen(cf.File())) return true;
-		MsgBox(_T("Error"), _T("Save bitmap failed!"), MB::Ok);
+		MsgBox(_T("Print screen"), _T("Save bitmap failed!"), MB::Ok);
 		return false;
 	}
 	inline void Resizeable(bool bResizeable = true) {
@@ -521,7 +522,7 @@ public:
 	}
 	inline void SetOnResize(tSimDisp_OnResize lpfnOnResize) reflect_to(pfnOnResize = lpfnOnResize);
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) reflect_to(pfnOnMouse = lpfnOnMouse);
-	inline void SetOnDestroy(tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(pfnOnDestroy = lpfnOnDestroy);
+	inline void SetOnClose(tSimDisp_OnClose lpfnOnClose) reflect_to(pfnOnClose = lpfnOnClose);
 	inline void Flush() reflect_to(panel.Message().OnPaint().Send());
 	inline void AutoFlush(bool bEnable) {
 		if (bEnable) {
@@ -567,7 +568,11 @@ protected:
 				msg.Dispatch();
 			}
 		} catch (Exception err) {
-			switch (pSidi->MsgBox(_T("Error"), err.operator String(), MB::IconError | MB::AbortRetryIgnore)) {
+			if (err.LastError() == 298) goto _msg_loop; // Ignore 
+			if (err.LastError() == 1400) goto _msg_loop; // Ignore 
+			switch (pSidi->MsgBox(_T("Message process error"), 
+								  err.operator String(),
+								  MB::IconError | MB::AbortRetryIgnore)) {
 				case IDIGNORE:
 				case IDRETRY:
 					goto _msg_loop;
@@ -619,7 +624,7 @@ public:
 		try {
 			fn_(*pSidi);
 		} catch (Exception err) {
-			pSidi->MsgBox(_T("Error"), err.operator String(), MB::IconError);
+			pSidi->MsgBox(_T("Action error"), err.operator String(), MB::IconError);
 			return false;
 		}
 		return true;
@@ -664,7 +669,7 @@ REG_FUNC(BOOL, AutoFlush, BOOL bEnable) reflect_as(lpSimDisp->AutoFlush(bEnable)
 REG_FUNC(BOOL, HideCursor, BOOL bHide) reflect_as(lpSimDisp->Do([=](SiDiWindow& Win) { Win.HideCursor(bHide); }));
 REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(lpSimDisp->Do([=](SiDiWindow &Win) { Win.Resizeable(bEnable); }));
 
-REG_FUNC(void, SetOnDestroy, tSimDisp_OnDestroy lpfnOnDestroy) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnDestroy(lpfnOnDestroy); }));
+REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnClose(lpfnOnClose); }));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnMouse(lpfnOnMouse); }));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(lpSimDisp->Do([=](SiDiWindow &Win) { Win.SetOnResize(lpfnOnResize); }));
 

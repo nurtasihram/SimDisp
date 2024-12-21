@@ -11,7 +11,7 @@ typedef struct {
 	uint8_t Leave : 1;
 } tSimDisp_MouseKey;
 
-typedef void(*tSimDisp_OnDestroy)(void);
+typedef void(*tSimDisp_OnClose)(void);
 typedef void(*tSimDisp_OnMouse)(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKeys);
 typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
@@ -30,22 +30,40 @@ typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 #ifdef USE_AYXANDAR
 class Ayxandar {
 	uint16_t xMax = 0, yMax = 0;
+	uint16_t xSize = 0, ySize = 0;
 	uint32_t nPix = 0;
 	uint32_t *lpBits = NULL;
 public:
 	inline void Init() {
 		SimDisp::GetSizeMax(&xMax, &yMax);
+		SimDisp::GetSize(&xSize, &ySize);
 		nPix = xMax * yMax;
 		lpBits = (uint32_t *)SimDisp::GetBuffer();
 	}
-	inline void Dot(WX::LPoint p, uint32_t rgb) { lpBits[p.x + p.y * xMax] = rgb; }
-	inline uint32_t Dot(WX::LPoint p) const { return lpBits[p.x + p.y * xMax]; }
+	inline void Dot(WX::LPoint p, uint32_t rgb) {
+#if _DEBUG
+		assert(0 <= p.x && p.x <= xSize);
+		assert(0 <= p.y && p.y <= ySize);
+#endif
+		lpBits[p.x + p.y * xMax] = rgb;
+	}
+	inline uint32_t Dot(WX::LPoint p) const {
+#if _DEBUG
+		assert(0 <= p.x && p.x <= xSize);
+		assert(0 <= p.y && p.y <= ySize);
+#endif
+		return lpBits[p.x + p.y * xMax];
+	}
 	inline void Fill(uint32_t rgb) {
 		auto pBits = lpBits;
 		for (uint32_t n = 0; n < nPix; ++n)
 			*pBits++ = rgb;
 	}
 	inline void Fill(uint32_t rgb, WX::LRect r) {
+#if _DEBUG
+		assert(0 <= r.left && r.right <= xSize);
+		assert(0 <= r.top && r.bottom <= ySize);
+#endif
 		auto pBits = lpBits + r.left + r.top * xMax;
 		for (int y = r.top; y <= r.bottom; ++y) {
 			auto lpLine = pBits;
@@ -55,6 +73,10 @@ public:
 		}
 	}
 	inline void SetRect(WX::LRect r, const uint32_t *lpBits, uint32_t BytesPerLine) {
+#if _DEBUG
+		assert(0 <= r.left && r.right <= xSize);
+		assert(0 <= r.top && r.bottom <= ySize);
+#endif
 		auto pBits = this->lpBits + r.left + r.top * xMax;
 		for (int y = r.top; y <= r.bottom; ++y) {
 			auto lpSrc = lpBits;
@@ -66,6 +88,10 @@ public:
 		}
 	}
 	inline void GetRect(WX::LRect r, uint32_t *lpBits, uint32_t BytesPerLine) {
+#if _DEBUG
+		assert(0 <= r.left && r.right <= xSize);
+		assert(0 <= r.top && r.bottom <= ySize);
+#endif
 		auto pBits = this->lpBits + r.left + r.top * xMax;
 		for (int y = r.top; y <= r.bottom; ++y) {
 			auto lpSrc = pBits;
