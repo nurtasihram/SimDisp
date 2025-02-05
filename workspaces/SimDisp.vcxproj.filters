@@ -3,10 +3,4 @@
   <ItemGroup>
     <ClCompile Include="..\SimDisp.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\SimDisp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\SimDisp.inl" />
-  </ItemGroup>
 </Project>
