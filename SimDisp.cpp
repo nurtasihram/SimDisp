@@ -401,11 +401,13 @@ private:
 	void(*pfnOnClose)() = O;
 	/// @brief 窗體關閉事件
 	inline void OnClose() {
-		if (pfnOnClose)
-			pfnOnClose();
+		if (bConsole)
+			wCon.Close();
 		if (uIDTimer_FlushPriod)
 			KillTimer(uIDTimer_FlushPriod),
 			uIDTimer_FlushPriod = 0;
+		if (pfnOnClose)
+			pfnOnClose();
 		PostQuitMessage(0);
 	}
 
@@ -435,21 +437,20 @@ private:
 	/// @brief 尺寸位置改變事件
 	/// @param pWndPos 窗體尺寸位置信息
 	/// @return 是否處理本次事件
-	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) { 
+	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) {
 		if ((pWndPos->Flags() & SWP::NoSize) == SWP::NoSize)
 			return false;
 		if (bLastIconic) {
 			bLastIconic = false;
-			return false;
+			return true;
 		}
 		if (Iconic()) {
 			bLastIconic = true;
-			return false;
+			return true;
 		}
 		auto &&border = Size() - ClientSize() + Border.left_top() + Border.right_bottom();
 		if (sbar.Enabled()) border.cy += sbar.Size().cy;
 		if (ConsoleVisible()) {
-			Window wCon = Console;
 			wCon.Position(Rect().left_bottom())
 				.Size({ Size().cx, wCon.Size().cy });
 		}
@@ -518,14 +519,14 @@ private:
 	inline void OnSysCommand(UINT cmd, int x, int y) {
 		switch (cmd) {
 			case SC_MINIMIZE:
-				bConsoleRestore = bConsole;
+				bConsoleRestore = ConsoleVisible();
 				ConsoleShow(false);
 				break;
 			case SC_RESTORE:
 				ConsoleShow(bConsoleRestore);
 				break;
 		}
-		Call().OnSysCommand(cmd, x, y);
+		DefProcOf().OnSysCommand(cmd, x, y);
 	}
 
 	/// @brief 週期頁面刷新定時器識別ID
@@ -680,8 +681,11 @@ public: // 一般操作
 	/// @return 是否保存成功
 	inline bool PrintScreen() {
 		ChooserFile cf;
+		auto &&time = SysTime();
 		cf
-			.File(Cats(ReplaceAll(SysTime(), _T(":"), _T("-")), _T(".bmp")))
+			.File(sprintf(_T("%04d%02d%02d%02d%02d%02d.bmp"),
+						  time.wYear, time.wMonth, time.wDay,
+						  time.wHour, time.wSecond, time.wSecond))
 			.Parent(self)
 			.Styles(ChooserFile::Style::Explorer)
 			.Title(_T("Printscreen to bitmap"))
@@ -733,7 +737,7 @@ public:
 	/// @brief 判斷控制臺是否可見
 	/// @return 控制臺是否可見
 	inline bool ConsoleVisible() {
-		return wCon ? wCon.Visible() : false;
+		return wCon && bConsole ? (wCon.Styles() & WS::Visible) == WS::Visible : false;
 	}
 
 	/// @brief 使能控制臺
@@ -748,6 +752,7 @@ public:
 				if (wCon.Visible()) return;
 			Console.Alloc();
 			wCon = Console;
+			assertl(wCon);
 			wCon.Styles(WS::SizeBox)
 				.Size({ panel.Size().cx, 200 })
 				.Position({ 0, panel.Rect().bottom });
@@ -761,16 +766,16 @@ public:
 	/// @brief 開啓控制臺
 	/// @param bOpen 是否開啓控制臺
 	inline void ConsoleShow(bool bOpen) {
-		if (!bConsole) return;
-		if (menu)
-			menu(IDM_HIDECONSOLE)
-				.String(bOpen ? _T("Hide C&onsole") : _T("Show C&onsole"));
+		if (!bConsole && bOpen || !wCon) ConsoleEnable(true);
 		if (bOpen)
 			wCon.Styles(wCon.Styles() | WS::Visible);
 		else
 			wCon.Styles(wCon.Styles() & ~WS::Visible);
 		wCon.Position(Rect().left_bottom())
 			.Size({ Size().cx, wCon.Size().cy });
+		if (menu)
+			menu(IDM_HIDECONSOLE)
+			.String(bOpen ? _T("Hide C&onsole") : _T("Show C&onsole"));
 	}
 
 	/// @brief 控制臺使能開啓
@@ -878,11 +883,15 @@ protected:
 		pWndSiDi->Update();
 		evtInited.Set();
 		Message msg;
-		while (msg.Get()) {
-			if (!TranslateMDISysAccel(*pWndSiDi, &msg)) {
+	_retry:
+		try {
+			while (msg.Get()) {
 				msg.Translate();
 				msg.Dispatch();
 			}
+		}
+		catch (Exception err) {
+			goto _retry;
 		}
 		CoUninitialize();
 	}

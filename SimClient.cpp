@@ -44,6 +44,13 @@ namespace SimDispClient {
 	} eventBox;
 
 	Event eventClose;
+	struct BaseOf_Thread(Watchdog) {
+		void OnStart() {
+			eventClose.WaitForSignal();
+			::Close();
+		}
+	} watchdog;
+
 	tSimDisp_OnClose _lpfnOnClose = O; // 窗體關閉事件類
 	tSimDisp_OnMouse _lpfnOnMouse = O; // 鼠標事件類
 	tSimDisp_OnResize _lpfnOnResize = O; // 窗體重設尺寸響應事件類
@@ -64,6 +71,8 @@ namespace SimDispClient {
 			assertl(msg.GetThread());
 			/* 設置完成事件 */
 			eventDone.Set();
+			/* 開啓看門狗 */
+			assertl(watchdog.Create());
 			/* 循環獲取活動事件消息 */
 			while (msg.GetThread())
 				switch (msg.ID<SIDI_MSG>()) {
@@ -140,8 +149,10 @@ namespace SimDispClient {
 		return SetWindowTextW(hwnd, lpTitle);
 	}
 
+	/// @brief 關閉宿主
 	inline void Close() {
 		Send(SIDI_MSG::Close);
+		Console.Free();
 		if (actionBox.StillActive())
 			actionBox.Terminate();
 		if (eventBox.StillActive())
@@ -160,7 +171,7 @@ namespace SimDispClient {
 
 	/// @brief 窗體關閉事件類
 	inline void SetOnClose(tSimDisp_OnClose lpfnOnClose) {
-		lpfnOnClose = lpfnOnClose;
+		_lpfnOnClose = lpfnOnClose;
 		Send(SIDI_MSG::SetOnClose, (bool)lpfnOnClose);
 	}
 
@@ -171,7 +182,7 @@ namespace SimDispClient {
 	/// @param MouseKeys 鼠鍵結構
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) {
 		_lpfnOnMouse = lpfnOnMouse;
-		Send(SIDI_MSG::SetOnMouse, (bool)_lpfnOnClose);
+		Send(SIDI_MSG::SetOnMouse, (bool)lpfnOnMouse);
 	}
 
 	/// @brief 窗體重設尺寸響應事件類
@@ -180,7 +191,7 @@ namespace SimDispClient {
 	/// @return 是否接受新尺寸
 	inline void SetOnResize(tSimDisp_OnResize lpfnOnResize) {
 		_lpfnOnResize = lpfnOnResize;
-		Send(SIDI_MSG::SetOnResize, (bool)_lpfnOnClose);
+		Send(SIDI_MSG::SetOnResize, (bool)lpfnOnResize);
 	}
 
 	inline auto&HostProcess() reflect_as(processHost);

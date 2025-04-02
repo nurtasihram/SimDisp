@@ -58,8 +58,7 @@ namespace SimDispHost {
 	void OnClose() {
 		while (bClientBlocked) {}
 		eventBox.Post(SIDI_MSG::SetOnClose);
-		Message msg;
-		assertl(msg.GetThread());
+		Process::Exit();
 	}
 
 	/// @brief 窗體重設尺寸響應事件
@@ -134,15 +133,15 @@ namespace SimDispHost {
 						break;
 					case SIDI_MSG::SetOnClose:
 						if (msg.ParamW<BOOL>())
-							SimDisp::SetOnMouse(OnMouse);
-						else
-							SimDisp::SetOnMouse(nullptr);
-						break;
-					case SIDI_MSG::SetOnMouse:
-						if (msg.ParamW<BOOL>())
 							SimDisp::SetOnClose(OnClose);
 						else
 							SimDisp::SetOnClose(nullptr);
+						break;
+					case SIDI_MSG::SetOnMouse:
+						if (msg.ParamW<BOOL>())
+							SimDisp::SetOnMouse(OnMouse);
+						else
+							SimDisp::SetOnMouse(nullptr);
 						break;
 					case SIDI_MSG::SetOnResize:
 						if (msg.ParamW<BOOL>())
