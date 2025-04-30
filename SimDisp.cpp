@@ -24,7 +24,10 @@
 
 #define DLL_EXPORTS
 #include "SimDisp.h"
-#include "winerror.h"
+
+#include "resource.h"
+
+HINSTANCE hinst = NULL;
 
 #pragma region SimDisp
 
@@ -319,7 +322,7 @@ private: // 預建制
 		IDM_RESIZE,
 		IDM_INVERT,
 		IDM_HIDECONSOLE,
-		IDM_HIDEMEMLIST,
+		IDM_KEYBOARDMAP,
 		IDM_HIDECURSOR,
 		IDM_LOCKCURSOR,
 		IDM_MASK_MOUSE,
@@ -361,7 +364,7 @@ private: // 預建制
 						 .String(_T("&Invert Screen"), IDM_INVERT, bResizeable)
 						 .Separator()
 						 .String(_T("Show C&onsole"), IDM_HIDECONSOLE, bConsole)
-						 .String(_T("Show &Memory List"), IDM_HIDEMEMLIST, bMemlst)
+						 .String(_T("Show &Keyboard Map"), IDM_KEYBOARDMAP)
 						 .Separator()
 						 .Popup(_T("&Cursor Control"), Menu::CreatePopup()
 								.Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false)
@@ -406,6 +409,8 @@ private:
 		if (uIDTimer_FlushPriod)
 			KillTimer(uIDTimer_FlushPriod),
 			uIDTimer_FlushPriod = 0;
+		if (wCon)
+			wCon.Styles(WS::Visible | WS::OverlappedWindow);
 		if (pfnOnClose)
 			pfnOnClose();
 		PostQuitMessage(0);
@@ -428,10 +433,73 @@ private:
 		sbar.FixSize();
 	}
 
+	tSimDisp_OnKey pfnOnKey = O; // 虛擬鍵盤事件回調函數
+	/// @brief 按鍵按下事件
+	/// @param vk 虛擬鍵碼
+	/// @param wRepeat 重復次數
+	/// @param flags 鍵盤狀態
+	inline void OnKeyDown(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (!flags.bPrevious) {
+			if (pfnOnKey)
+				pfnOnKey(vk, true);
+			dlg.ShowKey(flags.wScanCode, true);
+		}
+	}
+	/// @brief 按鍵釋放事件
+	/// @param vk 虛擬鍵碼
+	/// @param wRepeat 重復次數
+	/// @param flags 鍵盤狀態
+	inline void OnKeyUp(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (pfnOnKey)
+			pfnOnKey(vk, false);
+		dlg.ShowKey(flags.wScanCode, false);
+	}
+
+	class BaseOf_Dialog(Keyboard) {
+		SFINAE_Dialog(Keyboard);
+		SimDispWnd &parent;
+	public:
+		Keyboard(SimDispWnd &parent) : parent(parent) {}
+
+	private:
+		static inline auto Forming() reflect_as(IDD_OSK);
+
+	private:
+
+		/// @brief 窗體關閉事件
+		inline void OnClose() reflect_to(parent.KeyboardMap(false));
+
+	public:
+
+		/// @brief 顯示鍵盤事件
+		/// @param scanCode 鍵盤掃描碼
+		/// @param bPressed 是否按下
+		void ShowKey(UINT scanCode, bool bPressed) {
+			if (!self) return;
+//			auto &&btn = Item<Button>(SCAN_CODE_31);
+			auto hbtn = GetDlgItem(self, SCAN_CODE_31);
+			Item<Button>(SCAN_CODE_31).Enabled(bPressed);
+		}
+
+	};
+	Keyboard dlg = self;
+	void KeyboardMap(bool bKeyboard) {
+		if (bKeyboard) {
+			if (!dlg)
+				dlg.Create(O, hinst);
+			dlg.Show();
+		}
+		else if (dlg)
+			dlg.Hide();
+		this->bKeyboard = bKeyboard;
+		if (menu)
+			menu(IDM_KEYBOARDMAP).Check(bKeyboard);
+	}
+
 	bool bLastIconic = false; // 上次是否為圖標狀態
 	bool bResizeable = false; // 是否能修改尺寸
 	bool bConsole = false; // 是否顯示控制臺
-	bool bMemlst = true; // 是否顯示内存列表
+	bool bKeyboard = false; // 是否顯示虛擬鍵盤
 	/// @brief 響應新尺寸回調函數
 	tSimDisp_OnResize pfnOnResize = O;
 	/// @brief 尺寸位置改變事件
@@ -492,7 +560,8 @@ private:
 				if (menu)
 					ConsoleShow(!ConsoleVisible());
 				break;
-			case IDM_HIDEMEMLIST:
+			case IDM_KEYBOARDMAP:
+				KeyboardMap(!bKeyboard);
 				break;
 			case IDM_HIDECURSOR: HideCursor(!panel.bHideCursor); break;
 			case IDM_LOCKCURSOR:
@@ -773,9 +842,9 @@ public:
 			wCon.Styles(wCon.Styles() & ~WS::Visible);
 		wCon.Position(Rect().left_bottom())
 			.Size({ Size().cx, wCon.Size().cy });
+		Console.Reopen();
 		if (menu)
-			menu(IDM_HIDECONSOLE)
-			.String(bOpen ? _T("Hide C&onsole") : _T("Show C&onsole"));
+			menu(IDM_HIDECONSOLE).Check(bOpen);
 	}
 
 	/// @brief 控制臺使能開啓
@@ -867,7 +936,7 @@ private:
 	SimDispWnd *pWndSiDi = O;
 	/// @brief 初始化完成事件
 	Event evtInited = Event::Create();
-	/// @brief 
+	/// @brief 錯誤標注
 	bool bError = false;
 
 protected:
@@ -894,6 +963,7 @@ protected:
 			goto _retry;
 		}
 		CoUninitialize();
+		evtInited.Reset();
 	}
 
 	/// @brief 異常捕捉事件
@@ -1035,6 +1105,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 		case DLL_PROCESS_ATTACH:
 			if (lpSimDisp) break;
 			lpSimDisp = new SimDispClient;
+			hinst = hinstDLL;
 			break;
 		case DLL_PROCESS_DETACH:
 			if (!lpvReserved) break;

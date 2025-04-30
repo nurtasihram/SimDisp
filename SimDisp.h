@@ -28,6 +28,11 @@ typedef void(*tSimDisp_OnMouse)(int16_t xPos, int16_t yPos, int16_t zPos, tSimDi
 /// @return 是否接受新尺寸
 typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
+/// @brief 鍵盤事件類
+/// @param vk 鍵盤按鍵值
+/// @param bPressed 是否按下
+typedef void(*tSimDisp_OnKey)(UINT vk, BOOL bPressed);
+
 #define DLL_INL_LIST "SimDisp.inl"
 #define MOD_NAME SimDisp
 #include "./wx/dll.inl"

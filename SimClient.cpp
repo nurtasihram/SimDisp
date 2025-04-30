@@ -151,8 +151,8 @@ namespace SimDispClient {
 
 	/// @brief 關閉宿主
 	inline void Close() {
-		Send(SIDI_MSG::Close);
-		Console.Free();
+		if (!eventBoxHost.StillActive())
+			return;
 		if (actionBox.StillActive())
 			actionBox.Terminate();
 		if (eventBox.StillActive())

@@ -58,7 +58,6 @@ namespace SimDispHost {
 	void OnClose() {
 		while (bClientBlocked) {}
 		eventBox.Post(SIDI_MSG::SetOnClose);
-		Process::Exit();
 	}
 
 	/// @brief 窗體重設尺寸響應事件

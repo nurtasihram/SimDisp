@@ -5,5 +5,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SimHost.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Ni.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\SimHost.rc" />
   </ItemGroup>
 </Project>
