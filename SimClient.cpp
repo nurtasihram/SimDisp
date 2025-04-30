@@ -53,6 +53,7 @@ namespace SimDispClient {
 
 	tSimDisp_OnClose _lpfnOnClose = O; // 窗體關閉事件類
 	tSimDisp_OnMouse _lpfnOnMouse = O; // 鼠標事件類
+	tSimDisp_OnKey _lpfnOnKey = O; // 按鍵事件類
 	tSimDisp_OnResize _lpfnOnResize = O; // 窗體重設尺寸響應事件類
 	/// @brief 活動盒綫程類
 	struct BaseOf_Thread(ActionBox) {
@@ -84,8 +85,13 @@ namespace SimDispClient {
 						break;
 					case SIDI_MSG::SetOnMouse:
 						if (_lpfnOnMouse)
-							_lpfnOnMouse(LOWORD(msg.ParamW()), HIWORD(msg.ParamW()),
-										 LOWORD(msg.ParamL()), force_cast<tSimDisp_MouseKey>(HIWORD(msg.ParamL())));
+							_lpfnOnMouse(LOWORD(msg.ParamW()), HIWORD(msg.ParamW()), LOWORD(msg.ParamL()),
+										 reuse_as<tSimDisp_MouseKey>((BYTE)HIWORD(msg.ParamL())));
+						eventBoxHost.Post(msg);
+						break;
+					case SIDI_MSG::SetOnKey:
+						if (_lpfnOnKey)
+							_lpfnOnKey(msg.ParamW<UINT>(), msg.ParamL<BOOL>());
 						eventBoxHost.Post(msg);
 						break;
 					case SIDI_MSG::SetOnResize:
@@ -169,20 +175,25 @@ namespace SimDispClient {
 		}
 	}
 
-	/// @brief 窗體關閉事件類
-	inline void SetOnClose(tSimDisp_OnClose lpfnOnClose) {
-		_lpfnOnClose = lpfnOnClose;
-		Send(SIDI_MSG::SetOnClose, (bool)lpfnOnClose);
-	}
-
 	/// @brief 鼠標事件類
-	/// @param xPos 繪圖面板内光標x
-	/// @param yPos 繪圖面板内光標y
-	/// @param zPos 鼠標滾輪數
-	/// @param MouseKeys 鼠鍵結構
+	/// @param lpfnOnMouse 鼠標事件
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) {
 		_lpfnOnMouse = lpfnOnMouse;
 		Send(SIDI_MSG::SetOnMouse, (bool)lpfnOnMouse);
+	}
+
+	/// @brief 鍵盤事件類
+	/// @param lpfnOnKey 鍵盤事件
+	inline void SetOnKey(tSimDisp_OnKey lpfnOnKey) {
+		_lpfnOnKey = lpfnOnKey;
+		Send(SIDI_MSG::SetOnKey, (bool)lpfnOnKey);
+	}
+
+	/// @brief 窗體關閉事件類
+	/// @param lpfnOnClose 窗體關閉事件
+	inline void SetOnClose(tSimDisp_OnClose lpfnOnClose) {
+		_lpfnOnClose = lpfnOnClose;
+		Send(SIDI_MSG::SetOnClose, (bool)lpfnOnClose);
 	}
 
 	/// @brief 窗體重設尺寸響應事件類
@@ -228,8 +239,9 @@ REG_FUNC(void *, GetColors, void) {
 REG_FUNC(BOOL, HideCursor, BOOL bHide) reflect_as(SimDispClient::Send(SIDI_MSG::HideCursor, bHide).ParamW<BOOL>());
 REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(SimDispClient::Send(SIDI_MSG::Resizeable, bEnable).ParamW<BOOL>());
 
-REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose) reflect_to(SimDispClient::SetOnClose(lpfnOnClose));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(SimDispClient::SetOnMouse(lpfnOnMouse));
+REG_FUNC(void, SetOnKey, tSimDisp_OnKey lpfnOnKey) reflect_to(SimDispClient::SetOnKey(lpfnOnKey));
+REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose) reflect_to(SimDispClient::SetOnClose(lpfnOnClose));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(SimDispClient::SetOnResize(lpfnOnResize));
 
 REG_FUNC(HWND, GetHWND, void) reflect_as(SimDispClient::Send(SIDI_MSG::GetHWND).ParamW<HWND>());

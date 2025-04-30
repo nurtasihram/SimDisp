@@ -51,7 +51,15 @@ namespace SimDispHost {
 	/// @param MouseKeys 鼠鍵結構
 	void OnMouse(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKeys) {
 		if (bClientBlocked) return;
-		eventBox.Post(SIDI_MSG::SetOnMouse, MAKEWPARAM(xPos, yPos), MAKELPARAM(zPos, force_cast<uint8_t>(MouseKeys)));
+		eventBox.Post(SIDI_MSG::SetOnMouse, MAKEWPARAM(xPos, yPos), MAKELPARAM(zPos, reuse_as<uint8_t>(MouseKeys)));
+	}
+
+	/// @brief 鍵盤事件
+	/// @param vk 虛擬鍵盤按鍵值
+	/// @param bPressed 是否按下
+	void OnKey(UINT vk, BOOL bPressed) {
+		if (bClientBlocked) return;
+		eventBox.Post(SIDI_MSG::SetOnKey, vk, bPressed);
 	}
 
 	/// @brief 窗體關閉事件
@@ -141,6 +149,12 @@ namespace SimDispHost {
 							SimDisp::SetOnMouse(OnMouse);
 						else
 							SimDisp::SetOnMouse(nullptr);
+						break;
+					case SIDI_MSG::SetOnKey:
+						if (msg.ParamW<BOOL>())
+							SimDisp::SetOnKey(OnKey);
+						else
+							SimDisp::SetOnKey(nullptr);
 						break;
 					case SIDI_MSG::SetOnResize:
 						if (msg.ParamW<BOOL>())

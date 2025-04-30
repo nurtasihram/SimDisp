@@ -13,6 +13,7 @@ REG_FUNC(BOOL, Resizeable, BOOL bEnable)
 
 REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose)
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse)
+REG_FUNC(void, SetOnKey, tSimDisp_OnKey lpfnOnKey)
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize)
 
 REG_FUNC(HWND, GetHWND, void)

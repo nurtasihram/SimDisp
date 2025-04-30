@@ -433,12 +433,102 @@ private:
 		sbar.FixSize();
 	}
 
-	tSimDisp_OnKey pfnOnKey = O; // 虛擬鍵盤事件回調函數
+	class BaseOf_Dialog(Keyboard) {
+		SFINAE_Dialog(Keyboard);
+		SimDispWnd &parent;
+	public:
+		Keyboard(SimDispWnd &parent) : parent(parent) {}
+		~Keyboard() {}
+
+	private:
+		static inline auto Forming() reflect_as(IDD_OSK);
+
+	private:
+
+		UINT_PTR uIDTimer_LedPriod = 0;
+		bool InitDialog() {
+			uIDTimer_LedPriod = SetTimer(50, 0);
+			return true;
+		}
+
+		/// @brief 窗體關閉事件
+		void OnClose() reflect_to(parent.ShowKeyboard(false));
+
+		bool bNumLock = false,
+			 bCapsLock = false,
+			 bScroll = false;
+		void OnTimer(UINT id) {
+			bool bNumLock = GetKeyState(VK_NUMLOCK);
+			if (this->bNumLock != bNumLock) {
+				Item<Button>(IDC_LED_NUM).Invalidate();
+				this->bNumLock = bNumLock;
+			}
+			bool bCapsLock = GetKeyState(VK_CAPITAL);
+			if (this->bCapsLock != bCapsLock) {
+				Item<Button>(IDC_LED_CAPS).Invalidate();
+				this->bCapsLock = bCapsLock;
+			}
+			bool bScroll = GetKeyState(VK_SCROLL);
+			if (this->bScroll != bScroll) {
+				Item<Button>(IDC_LED_SCROLL).Invalidate();
+				this->bScroll = bScroll;
+			}
+		}
+
+		Brush greenBrush = Brush::CreateSolid(RGB(0, 255, 0));
+		inline HBRUSH OnCtlColorStatic(HDC hdc, HWND hwndChild) {
+			if (hwndChild == Item<Button>(IDC_LED_NUM)) {
+				if (bNumLock)
+					return greenBrush;
+			}
+			elif (hwndChild == Item<Button>(IDC_LED_CAPS)) {
+				if (bCapsLock)
+					return greenBrush;
+			}
+			elif (hwndChild == Item<Button>(IDC_LED_SCROLL)) {
+				if (bScroll)
+					return greenBrush;
+			}
+			HandleNext();
+		}
+
+	public:
+
+		/// @brief 顯示鍵盤事件
+		/// @param scanCode 鍵盤掃描碼
+		/// @param bPressed 是否按下
+		void ShowKey(UINT scanCode, bool bPressed) {
+			if (!self)
+				return;
+			if (auto &&btn = Item<Button>(scanCode + SCAN_CODE_0))
+				btn.States(bPressed ? ButtonState::Checked : ButtonState::Unchecked);
+		}
+
+	};
+	/// @brief 虛擬鍵盤對話框
+	Keyboard dlg = self;
+	/// @brief 顯示虛擬鍵盤
+	/// @param bKeyboard 顯示虛擬鍵盤
+	void ShowKeyboard(bool bKeyboard) {
+		if (bKeyboard) {
+			if (!dlg)
+				dlg.Create(O, hinst);
+			dlg.Show();
+		}
+		elif (dlg)
+			dlg.Hide();
+		this->bKeyboard = bKeyboard;
+		if (menu)
+			menu(IDM_KEYBOARDMAP).Check(bKeyboard);
+	}
+	/// @brief 虛擬鍵盤事件迴調函數
+	tSimDisp_OnKey pfnOnKey = O;
 	/// @brief 按鍵按下事件
 	/// @param vk 虛擬鍵碼
 	/// @param wRepeat 重復次數
 	/// @param flags 鍵盤狀態
 	inline void OnKeyDown(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (panel.bMaskKeyboard) return;
 		if (!flags.bPrevious) {
 			if (pfnOnKey)
 				pfnOnKey(vk, true);
@@ -450,57 +540,17 @@ private:
 	/// @param wRepeat 重復次數
 	/// @param flags 鍵盤狀態
 	inline void OnKeyUp(UINT vk, int16_t wRepeat, KEY_FLAGS flags) {
+		if (panel.bMaskKeyboard) return;
 		if (pfnOnKey)
 			pfnOnKey(vk, false);
 		dlg.ShowKey(flags.wScanCode, false);
-	}
-
-	class BaseOf_Dialog(Keyboard) {
-		SFINAE_Dialog(Keyboard);
-		SimDispWnd &parent;
-	public:
-		Keyboard(SimDispWnd &parent) : parent(parent) {}
-
-	private:
-		static inline auto Forming() reflect_as(IDD_OSK);
-
-	private:
-
-		/// @brief 窗體關閉事件
-		inline void OnClose() reflect_to(parent.KeyboardMap(false));
-
-	public:
-
-		/// @brief 顯示鍵盤事件
-		/// @param scanCode 鍵盤掃描碼
-		/// @param bPressed 是否按下
-		void ShowKey(UINT scanCode, bool bPressed) {
-			if (!self) return;
-//			auto &&btn = Item<Button>(SCAN_CODE_31);
-			auto hbtn = GetDlgItem(self, SCAN_CODE_31);
-			Item<Button>(SCAN_CODE_31).Enabled(bPressed);
-		}
-
-	};
-	Keyboard dlg = self;
-	void KeyboardMap(bool bKeyboard) {
-		if (bKeyboard) {
-			if (!dlg)
-				dlg.Create(O, hinst);
-			dlg.Show();
-		}
-		else if (dlg)
-			dlg.Hide();
-		this->bKeyboard = bKeyboard;
-		if (menu)
-			menu(IDM_KEYBOARDMAP).Check(bKeyboard);
 	}
 
 	bool bLastIconic = false; // 上次是否為圖標狀態
 	bool bResizeable = false; // 是否能修改尺寸
 	bool bConsole = false; // 是否顯示控制臺
 	bool bKeyboard = false; // 是否顯示虛擬鍵盤
-	/// @brief 響應新尺寸回調函數
+	/// @brief 響應新尺寸迴調函數
 	tSimDisp_OnResize pfnOnResize = O;
 	/// @brief 尺寸位置改變事件
 	/// @param pWndPos 窗體尺寸位置信息
@@ -561,7 +611,7 @@ private:
 					ConsoleShow(!ConsoleVisible());
 				break;
 			case IDM_KEYBOARDMAP:
-				KeyboardMap(!bKeyboard);
+				ShowKeyboard(!bKeyboard);
 				break;
 			case IDM_HIDECURSOR: HideCursor(!panel.bHideCursor); break;
 			case IDM_LOCKCURSOR:
@@ -629,7 +679,7 @@ private: // 自定義子事件
 		mk.Shift = bool(keyFlags & MK_SHIFT);
 		if (panel.bMaskMouse)
 			sbar.Text(4, _T("mouse event masked"));
-		else if (x < 0 || y < 0) {
+		elif (x < 0 || y < 0) {
 			sbar.Text(4, _T("Mouse leave"));
 			mk.Leave = 1;
 		}
@@ -854,7 +904,7 @@ public:
 		if (bConsole) {
 			if (ConsoleVisible())
 				ConsoleShow(bEnableOpen);
-			else if (bEnableOpen)
+			elif (bEnableOpen)
 				ConsoleShow(true);
 			else
 				ConsoleEnable(false);
@@ -897,8 +947,12 @@ public: // 用戶活动事件控制
 	inline void SetOnMouse(tSimDisp_OnMouse lpfnOnMouse) reflect_to(pfnOnMouse = lpfnOnMouse);
 
 	/// @brief 設置尺寸修改事件
-	/// @param lpfnOnResize 響應新尺寸回調函數
+	/// @param lpfnOnResize 響應新尺寸迴調函數
 	inline void SetOnResize(tSimDisp_OnResize lpfnOnResize) reflect_to(pfnOnResize = lpfnOnResize);
+
+	/// @brief 設置鍵盤事件
+	/// @param lpfnOnKey 鍵盤事件迴調函數
+	inline void SetOnKey(tSimDisp_OnKey lpfnOnKey) reflect_to(pfnOnKey = lpfnOnKey)
 
 	/// @brief 設置關閉事件
 	/// @param lpfnOnClose 窗體關閉事件迴調函數
@@ -1081,6 +1135,7 @@ REG_FUNC(BOOL, Resizeable, BOOL bEnable) reflect_as(lpSimDisp->Do([=](SimDispWnd
 
 REG_FUNC(void, SetOnClose, tSimDisp_OnClose lpfnOnClose) reflect_to(lpSimDisp->Do([=](SimDispWnd &Win) { Win.SetOnClose(lpfnOnClose); }));
 REG_FUNC(void, SetOnMouse, tSimDisp_OnMouse lpfnOnMouse) reflect_to(lpSimDisp->Do([=](SimDispWnd &Win) { Win.SetOnMouse(lpfnOnMouse); }));
+REG_FUNC(void, SetOnKey, tSimDisp_OnKey lpfnOnKey) reflect_to(lpSimDisp->Do([=](SimDispWnd &Win) { Win.SetOnKey(lpfnOnKey); }));
 REG_FUNC(void, SetOnResize, tSimDisp_OnResize lpfnOnResize) reflect_to(lpSimDisp->Do([=](SimDispWnd &Win) { Win.SetOnResize(lpfnOnResize); }));
 
 REG_FUNC(HWND, GetHWND, void) {

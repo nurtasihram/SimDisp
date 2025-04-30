@@ -12,9 +12,6 @@ struct tSimDisp_MouseKey {
 	uint8_t Leave : 1;
 };
 
-/// @brief 窗體關閉事件類
-typedef void(*tSimDisp_OnClose)(void);
-
 /// @brief 鼠標事件類
 /// @param xPos 繪圖面板内光標x
 /// @param yPos 繪圖面板内光標y
@@ -22,16 +19,19 @@ typedef void(*tSimDisp_OnClose)(void);
 /// @param MouseKeys 鼠鍵結構
 typedef void(*tSimDisp_OnMouse)(int16_t xPos, int16_t yPos, int16_t zPos, tSimDisp_MouseKey MouseKeys);
 
+/// @brief 鍵盤事件類
+/// @param vk 鍵盤按鍵值
+/// @param bPressed 是否按下
+typedef void(*tSimDisp_OnKey)(UINT vk, BOOL bPressed);
+
+/// @brief 窗體關閉事件類
+typedef void(*tSimDisp_OnClose)(void);
+
 /// @brief 窗體重設尺寸響應事件類
 /// @param nSizeX 繪圖面板新尺寸x
 /// @param nSizeY 繪圖面板新尺寸y
 /// @return 是否接受新尺寸
 typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
-
-/// @brief 鍵盤事件類
-/// @param vk 鍵盤按鍵值
-/// @param bPressed 是否按下
-typedef void(*tSimDisp_OnKey)(UINT vk, BOOL bPressed);
 
 #define DLL_INL_LIST "SimDisp.inl"
 #define MOD_NAME SimDisp
