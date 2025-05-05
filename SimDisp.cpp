@@ -237,7 +237,7 @@ private:
 			if (!bHideCursor)
 				return false;
 			if (!bMaskMouse) {
-				SetCursor(nullptr);
+				SetCursor(O);
 				return true;
 			}
 			static auto &&CursorNo = Module()->Cursor(IDC_NO);
