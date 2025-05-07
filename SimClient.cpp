@@ -1,6 +1,6 @@
 ﻿
 
-#include "./wx/realtime.h"
+#include "wx_realtime.h"
 
 #define SIMDISP_HOST
 #include "SimHost.h"

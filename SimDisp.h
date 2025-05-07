@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "./wx/resource.h"
+#include "wx_resource.h"
 
 /// @brief SimDisp鼠鍵結構
 struct tSimDisp_MouseKey {
@@ -35,7 +35,7 @@ typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
 #define DLL_INL_LIST "SimDisp.inl"
 #define MOD_NAME SimDisp
-#include "./wx/dll.inl"
+#include "wx_dll.inl"
 
 #ifdef USE_AYXANDAR
 #	undef USE_AYXANDAR

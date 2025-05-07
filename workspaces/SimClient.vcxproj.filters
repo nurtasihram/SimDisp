@@ -4,9 +4,9 @@
     <ClCompile Include="..\SimClient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
+    <ResourceCompile Include="..\SimClient.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\SimClient.rc" />
+    <ClInclude Include="..\resource.h" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿#include "./wx/realtime.h"
+﻿#include "wx_realtime.h"
 
 #define SIMDISP_HOST
 #define DLL_IMPORTS 1

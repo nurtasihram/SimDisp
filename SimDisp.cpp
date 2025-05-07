@@ -16,11 +16,11 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
-#include "./wx/window.h"
-#include "./wx/control.h"
-#include "./wx/dialog.h"
-#include "./wx/realtime.h"
-#include "./wx/file.h"
+#include "wx_window.h"
+#include "wx_control.h"
+#include "wx_dialog.h"
+#include "wx_realtime.h"
+#include "wx_file.h"
 
 #define DLL_EXPORTS
 #include "SimDisp.h"
@@ -490,6 +490,7 @@ private:
 					return greenBrush;
 			}
 			HandleNext();
+			return O; // Unreachable
 		}
 
 	public:

@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\SimHost.cpp" />
+    <ResourceCompile Include="..\SimHost.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SimHost.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Ni.ico" />
+    <ClCompile Include="..\SimHost.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\SimHost.rc" />
+    <Image Include="..\SimDisp.ico" />
   </ItemGroup>
 </Project>

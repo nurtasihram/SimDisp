@@ -4,7 +4,7 @@
 #define AYXANDAR
 #include "SimDisp.h"
 
-#include "./wx/realtime.h"
+#include "wx_realtime.h"
 
 using namespace WX;
 Console con;
