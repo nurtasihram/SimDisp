@@ -33,6 +33,10 @@ typedef void(*tSimDisp_OnClose)(void);
 /// @return 是否接受新尺寸
 typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
+#ifdef DLL_IMPORTS
+#	define DEF_AYXANDAR
+#endif
+
 #define DLL_INL_LIST "SimDisp.inl"
 #define MOD_NAME SimDisp
 #include "wx_dll.inl"
@@ -146,5 +150,9 @@ public:
 };
 namespace SimDisp {
 extern Ayxandar Ayx;
+#ifdef DEF_AYXANDAR
+Ayxandar Ayx;
+#	undef DEF_AYXANDAR
+#endif
 }
 #endif
