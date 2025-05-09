@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "wx_resource.h"
+#include <stdint.h>
 
 /// @brief SimDisp鼠鍵結構
 struct tSimDisp_MouseKey {
@@ -22,7 +22,7 @@ typedef void(*tSimDisp_OnMouse)(int16_t xPos, int16_t yPos, int16_t zPos, tSimDi
 /// @brief 鍵盤事件類
 /// @param vk 鍵盤按鍵值
 /// @param bPressed 是否按下
-typedef void(*tSimDisp_OnKey)(UINT vk, BOOL bPressed);
+typedef void(*tSimDisp_OnKey)(uint16_t vk, uint8_t bPressed);
 
 /// @brief 窗體關閉事件類
 typedef void(*tSimDisp_OnClose)(void);
@@ -31,7 +31,7 @@ typedef void(*tSimDisp_OnClose)(void);
 /// @param nSizeX 繪圖面板新尺寸x
 /// @param nSizeY 繪圖面板新尺寸y
 /// @return 是否接受新尺寸
-typedef BOOL(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
+typedef uint8_t(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
 #ifdef DLL_IMPORTS
 #	define DEF_AYXANDAR

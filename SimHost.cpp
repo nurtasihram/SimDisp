@@ -57,7 +57,7 @@ namespace SimDispHost {
 	/// @brief 鍵盤事件
 	/// @param vk 虛擬鍵盤按鍵值
 	/// @param bPressed 是否按下
-	void OnKey(UINT vk, BOOL bPressed) {
+	void OnKey(uint16_t vk, uint8_t bPressed) {
 		if (bClientBlocked) return;
 		eventBox.Post(SIDI_MSG::SetOnKey, vk, bPressed);
 	}
@@ -72,7 +72,7 @@ namespace SimDispHost {
 	/// @param nSizeX 繪圖面板新尺寸x
 	/// @param nSizeY 繪圖面板新尺寸y
 	/// @return 是否接受新尺寸
-	BOOL OnResize(uint16_t nSizeX, uint16_t nSizeY) {
+	uint8_t OnResize(uint16_t nSizeX, uint16_t nSizeY) {
 		if (bClientBlocked) return FALSE;
 		eventBox.Post(SIDI_MSG::SetOnResize, nSizeX, nSizeY);
 		while (bClientBlocked) {}
