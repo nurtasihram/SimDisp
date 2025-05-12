@@ -3,6 +3,7 @@ REG_FUNC(BOOL, Open, const wchar_t *lpTitle, uint16_t xSize, uint16_t ySize)
 REG_FUNC(BOOL, Show, BOOL bShow)
 REG_FUNC(void, Close, void)
 REG_FUNC(void, UserClose, void)
+REG_FUNC(BOOL, IsRunning, void)
 
 REG_FUNC(void, GetSize, uint16_t *xSize, uint16_t *ySize)
 REG_FUNC(void, GetSizeMax, uint16_t *xSize, uint16_t *ySize)

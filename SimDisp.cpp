@@ -16,6 +16,7 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
+#include "wx_console.h"
 #include "wx_window.h"
 #include "wx_control.h"
 #include "wx_dialog.h"
@@ -331,7 +332,7 @@ private: // 預建制
 		IDM_ABOUT
 	};
 	/// @brief 主要功能選單
-	WX::Menu menu = WX::Menu::Create();
+	WX::Menu menu;
 	WxClass() {
 		xClass() {
 			Styles(CStyle::Redraw);
@@ -357,7 +358,7 @@ private: // 預建制
 			.Size(500)
 			.Position(100)
 			.Menu(menu
-				  .Popup(_T("&Screen"), Menu::CreatePopup()
+				  .Popup(_T("&Screen"), MenuPopup()
 						 .String(_T("&Print Screen"), IDM_PRINTSCREEN)
 						 .Separator()
 						 .String(_T("&Resize Screen"), IDM_RESIZE, bResizeable)
@@ -366,16 +367,16 @@ private: // 預建制
 						 .String(_T("Show C&onsole"), IDM_HIDECONSOLE, bConsole)
 						 .String(_T("Show &Keyboard Map"), IDM_KEYBOARDMAP)
 						 .Separator()
-						 .Popup(_T("&Cursor Control"), Menu::CreatePopup()
-								.Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false)
+						 .Popup(_T("&Cursor Control"), MenuPopup()
+								.Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false, true)
 								.Check(_T("&Lock Mouse On Screen"), IDM_LOCKCURSOR))
 						 .Separator()
 						 .String(_T("&Exit"), IDM_EXIT))
-				  .Popup(_T("&Event"), Menu::CreatePopup()
+				  .Popup(_T("&Event"), MenuPopup()
 						 .Check(_T("Mask &Mouse Event"), IDM_MASK_MOUSE, panel.bMaskMouse)
 						 .Check(_T("Mask &Touch Event"), IDM_MASK_TOUCH, panel.bMaskTouch)
 						 .Check(_T("Mask &Keyboard Event"), IDM_MASK_KEYBOARD, panel.bMaskKeyboard))
-				  .Popup(_T("&Help"), Menu::CreatePopup()
+				  .Popup(_T("&Help"), MenuPopup()
 						 .String(_T("&About"), IDM_ABOUT)));
 	}
 #pragma endregion
@@ -567,7 +568,7 @@ private:
 			bLastIconic = true;
 			return true;
 		}
-		auto &&border = Size() - ClientSize() + Border.left_top() + Border.right_bottom();
+		auto &&border = Size() - ClientSize() + LSize(Border.left_top() + Border.right_bottom());
 		if (sbar.Enabled()) border.cy += sbar.Size().cy;
 		if (ConsoleVisible()) {
 			wCon.Position(Rect().left_bottom())
@@ -871,7 +872,7 @@ public:
 			if (wCon)
 				if (wCon.Visible()) return;
 			Console.Alloc();
-			wCon = Console;
+			wCon = Console.Window();
 			assertl(wCon);
 			wCon.Styles(WS::SizeBox)
 				.Size({ panel.Size().cx, 200 })
@@ -886,7 +887,7 @@ public:
 	/// @brief 開啓控制臺
 	/// @param bOpen 是否開啓控制臺
 	inline void ConsoleShow(bool bOpen) {
-		if (!bConsole && bOpen || !wCon) ConsoleEnable(true);
+		if ((!bConsole && bOpen) || !wCon) ConsoleEnable(true);
 		if (bOpen)
 			wCon.Styles(wCon.Styles() | WS::Visible);
 		else
@@ -1015,6 +1016,7 @@ protected:
 			}
 		}
 		catch (Exception err) {
+			(void)err;
 			goto _retry;
 		}
 		CoUninitialize();
@@ -1105,6 +1107,7 @@ REG_FUNC(BOOL, Open, const wchar_t *lpTitle, uint16_t xSize, uint16_t ySize) ref
 REG_FUNC(BOOL, Show, BOOL bShow) reflect_as(lpSimDisp->Do([&](SimDispWnd &Win) { if (bShow) Win.Show().BringToTop(); else Win.Hide(); }));
 REG_FUNC(void, Close, void) reflect_to(lpSimDisp->Close());
 REG_FUNC(void, UserClose, void) reflect_to(lpSimDisp->UserClose());
+REG_FUNC(BOOL, IsRunning, void) reflect_as(lpSimDisp ? lpSimDisp->StillActive() : false);
 
 REG_FUNC(void, GetSize, uint16_t *xSize, uint16_t *ySize) {
 	lpSimDisp->Do([=](SimDispWnd &Win) {

@@ -215,6 +215,7 @@ REG_FUNC(BOOL, Open, const wchar_t *lpTitle, uint16_t xSize, uint16_t ySize) ref
 REG_FUNC(BOOL, Show, BOOL bShow) reflect_as(SimDispClient::Send(SIDI_MSG::Show, bShow).ParamW<BOOL>());
 REG_FUNC(void, Close, void) reflect_to(SimDispClient::Close());
 REG_FUNC(void, UserClose, void) reflect_to(SimDispClient::UserClose());
+REG_FUNC(BOOL, IsRunning, void) reflect_as(SimDispClient::actionBoxHost.StillActive());
 
 REG_FUNC(void, GetSize, uint16_t *xSize, uint16_t *ySize) {
 	auto &msg = SimDispClient::Send(SIDI_MSG::GetSize);
