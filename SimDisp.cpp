@@ -63,6 +63,16 @@ static DC &TayKit(DC &dc, LPoint org, int r) {
 	dc(brushWhite)(penWhite).DrawEllipse(rect1 + LPoint{ 0, (r - 1) / 3 * 2 });
 	return dc;
 }
+static Icon makeIcon(int size) {
+	Bitmap bmpColor = Bitmap().Create(size);
+	Bitmap bmpMask = Bitmap::Create(size).BitsPerPixel(1);
+	TayKit(WX::DC::CreateCompatible()(bmpColor)
+		   .Fill(Brush::Black()), size / 2, size / 2);
+	DC::CreateCompatible()(bmpMask)
+		.Fill(Brush::White())
+		(Brush::Black()).DrawEllipse({ 0, 0, size, size });
+	return Icon::Create(bmpColor, bmpMask);
+};
 
 /// @brief SimDisp窗體類
 class BaseOf_Window(SimDispWnd) {
@@ -180,6 +190,7 @@ private:
 				Cursor(IDC_ARROW);
 			}
 		};
+	public:
 		inline auto Create() {
 			return super::Create()
 				.Parent(parent)
@@ -333,25 +344,17 @@ private: // 預建制
 	};
 	/// @brief 主要功能選單
 	WX::Menu menu;
-	WxClass() {
+	WxClassEx() {
 		xClass() {
 			Styles(CStyle::Redraw);
 			Cursor(IDC_ARROW);
 			Background(SysColor::Window);
-			auto makeIcon = [](WX::Icon &ico, int size) {
-				Bitmap bmpColor = Bitmap().Create(size);
-				Bitmap bmpMask = Bitmap::Create(size).BitsPerPixel(1);
-				TayKit(WX::DC::CreateCompatible()(bmpColor)
-					   .Fill(Brush::Black()), size / 2, size / 2);
-				WX::DC::CreateCompatible()(bmpMask)
-					.Fill(Brush::White())
-					(Brush::Black()).DrawEllipse({ 0, 0, size, size });
-				ico = ::Icon::Create(bmpColor, bmpMask);
-			};
-			makeIcon(Icon(), 128);
-			makeIcon(IconSm(), 48);
+			Icon(makeIcon(128));
+			IconSmall(makeIcon(48));
 		}
 	};
+
+public:
 	inline auto Create() {
 		return super::Create()
 			.Styles(WS::MinimizeBox | WS::Caption | WS::SysMenu | WS::ClipChildren)
@@ -392,11 +395,10 @@ private:
 	/// @return 是否建制成功
 	inline bool OnCreate(RefAs<CreateStruct *> lpCreate) {
 		assertl(sbar.Create(self));
-		auto rc = AdjustRect(lpCreate->Rect() + LSize(Border.right_bottom() + Border.left_top()) + LSize(0, sbar.Size().cy));
 		assertl(panel.Create()
 			   .Position(Border.left_top())
 			   .Size(lpCreate->Size() - LSize(1)));
-		Move(rc);
+		Size(AdjustRect(lpCreate->Size() + Border.right_bottom() + Border.left_top() + LPoint(0, sbar.Size().cy)));
 		uIDTimer_FlushPriod = SetTimer(1, 12);
 		return true;
 	}
@@ -557,7 +559,7 @@ private:
 	/// @brief 尺寸位置改變事件
 	/// @param pWndPos 窗體尺寸位置信息
 	/// @return 是否處理本次事件
-	inline bool OnWindowPosChanging(RefAs<WindowPos *> pWndPos) {
+	inline bool OnWindowPosChanging(RefAs<WndPos *> pWndPos) {
 		if ((pWndPos->Flags() & SWP::NoSize) == SWP::NoSize)
 			return false;
 		if (bLastIconic) {
@@ -801,18 +803,21 @@ public: // 一般操作
 	/// @brief 打印虛擬銀幕到文件對話框
 	/// @return 是否保存成功
 	inline bool PrintScreen() {
-		ChooserFile cf;
 		auto &&time = SysTime();
-		cf
-			.File(sprintf(_T("%04d%02d%02d%02d%02d%02d.bmp"),
-						  time.wYear, time.wMonth, time.wDay,
-						  time.wHour, time.wSecond, time.wSecond))
+		String file =
+			sprintf(_T("%04d%02d%02d%02d%02d%02d.bmp"),
+					time.wYear, time.wMonth, time.wDay,
+					time.wHour, time.wSecond, time.wSecond)
+			.Resize(MAX_PATH * 2);
+		if (!ChooserFile()
+			.File(file)
 			.Parent(self)
 			.Styles(ChooserFile::Style::Explorer)
 			.Title(_T("Printscreen to bitmap"))
-			.Filter(_T("Bitmap file (*.bmp)\0*.bmp*\0\0"));
-		if (!cf.SaveFile()) return false;
-		if (PrintScreen(cf.File())) return true;
+			.Filter(_T("Bitmap file (*.bmp)\0*.bmp*\0\0"))
+			.SaveFile())
+			return false;
+		if (PrintScreen(file)) return true;
 		MsgBox(_T("Print screen"), _T("Save bitmap failed!"), MB::Ok);
 		return false;
 	}
