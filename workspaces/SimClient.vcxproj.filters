@@ -4,9 +4,23 @@
     <ClCompile Include="..\SimClient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\SimClient.rc" />
+    <Filter Include="resources">
+      <UniqueIdentifier>{dd82b562-2000-423d-9c22-344b6cccb59c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\resource.h" />
+    <ClInclude Include="..\resources\resource.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\SimClient.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\resources\SimDisp.ico">
+      <Filter>resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -182,21 +182,12 @@ private:
 	public:
 		GraphPanel(SimDispWnd &parent) : parent(parent) {}
 
-#pragma region Precreate
-	private: // 預建制
-		WxClass() {
-			xClass() {
-				Styles(CStyle::Redraw);
-				Cursor(IDC_ARROW);
-			}
-		};
 	public:
 		inline auto Create() {
 			return super::Create()
 				.Parent(parent)
 				.Styles(WS::Child | WS::Visible);
 		}
-#pragma endregion
 
 #pragma region Events
 	private: // 窗體事件組
@@ -344,13 +335,10 @@ private: // 預建制
 	};
 	/// @brief 主要功能選單
 	WX::Menu menu;
-	WxClassEx() {
+	WxClass() {
 		xClass() {
-			Styles(CStyle::Redraw);
-			Cursor(IDC_ARROW);
-			Background(SysColor::Window);
 			Icon(makeIcon(128));
-			IconSmall(makeIcon(48));
+			//IconSmall(makeIcon(48));
 		}
 	};
 
@@ -398,6 +386,7 @@ private:
 		assertl(panel.Create()
 			   .Position(Border.left_top())
 			   .Size(lpCreate->Size() - LSize(1)));
+		sbar.Visible(true);
 		Size(AdjustRect(lpCreate->Size() + Border.right_bottom() + Border.left_top() + LPoint(0, sbar.Size().cy)));
 		uIDTimer_FlushPriod = SetTimer(1, 12);
 		return true;
@@ -723,14 +712,14 @@ private: // 自定義子事件
 						 .Style(WS::Child | WS::Visible | StaticStyle::CenterImage)
 						 .Position({ 24, 12 }).Size({ 14, 14 }))
 					.Add(DCtl(DClass::Edit)
-						 .Style(WS::Child | WS::Visible | EditStyle::Number | WS::TabStop)
+						 .Style(WS::Child | WS::Visible | WS::TabStop | EditStyle::Number)
 						 .Position({ 42, 12 }).Size({ 72, 14 })
 						 .ID(IDE_CX))
 					.Add(DCtl(L"&Y:")
 						 .Style(WS::Child | WS::Visible | StaticStyle::CenterImage)
 						 .Position({ 24, 30 }).Size({ 72, 14 }))
 					.Add(DCtl(DClass::Edit)
-						 .Style(WS::Child | WS::Visible | EditStyle::Number | WS::TabStop)
+						 .Style(WS::Child | WS::Visible | WS::TabStop | EditStyle::Number)
 						 .Position({ 42,30 }).Size({ 72, 14 })
 						 .ID(IDE_CY))
 					.Add(DCtl(L"&OK", DClass::Button)
@@ -804,15 +793,15 @@ public: // 一般操作
 	/// @return 是否保存成功
 	inline bool PrintScreen() {
 		auto &&time = SysTime();
-		String file =
-			sprintf(_T("%04d%02d%02d%02d%02d%02d.bmp"),
-					time.wYear, time.wMonth, time.wDay,
-					time.wHour, time.wSecond, time.wSecond)
+		auto &&file =
+			format(_T("%04d%02d%02d%02d%02d%02d.bmp"),
+				   time.Year(), time.Month(), time.Day(),
+				   time.Hour(), time.Minute(), time.Second())
 			.Resize(MAX_PATH * 2);
-		if (!ChooserFile()
+		if (!FileChoose()
 			.File(file)
 			.Parent(self)
-			.Styles(ChooserFile::Style::Explorer)
+			.Styles(FileChooseStyle::Explorer)
 			.Title(_T("Printscreen to bitmap"))
 			.Filter(_T("Bitmap file (*.bmp)\0*.bmp*\0\0"))
 			.SaveFile())
@@ -1002,27 +991,24 @@ private:
 
 protected:
 
-	/// @brief 綫程啓動事件
-	inline void OnStart() {
-		assertl(SUCCEEDED(CoInitialize(NULL)));
-		evtInited.Reset();
-		bError = false;
+	inline void WndCreate() {
 		pWndSiDi = new SimDispWnd;
 		if (!pWndSiDi->Create().Size({ xSize, ySize }).Caption(lpszTitle))
 			return;
 		pWndSiDi->Update();
 		evtInited.Set();
+	}
+
+	/// @brief 綫程啓動事件
+	inline void OnStart() {
+		assertl(SUCCEEDED(CoInitialize(O)));
+		evtInited.Reset();
+		bError = false;
+		WndCreate();
 		Message msg;
-	_retry:
-		try {
-			while (msg.Get()) {
-				msg.Translate();
-				msg.Dispatch();
-			}
-		}
-		catch (Exception err) {
-			(void)err;
-			goto _retry;
+		while (msg.Get()) {
+			msg.Translate();
+			msg.Dispatch();
 		}
 		CoUninitialize();
 		evtInited.Reset();

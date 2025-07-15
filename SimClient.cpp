@@ -229,10 +229,9 @@ REG_FUNC(void, GetSizeMax, uint16_t *xSize, uint16_t *ySize) {
 }
 
 REG_FUNC(void *, GetColors, void) {
-	static File bmpBuff;
 	static File::MapPointer buffer;
 	if (auto ptr = &buffer) return ptr;
-	bmpBuff = File().OpenMapping(Cats(_T("SIDI"), SimDispClient::HostProcess().ID()));
+	static File bmpBuff = File::OpenMapping(Cats(_T("SIDI"), SimDispClient::HostProcess().ID()));
 	buffer = bmpBuff.MapView();
 	return &buffer;
 }

@@ -5,32 +5,7 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimDisp", "workspaces\SimDisp.vcxproj", "{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimDisp_test", "workspaces\SimDisp_test.vcxproj", "{7B9801CA-90FF-42E4-9828-8DA0342220AF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E} = {1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}
-		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8} = {D977C0AE-A9EE-467F-AE96-E4AD49702BF8}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WX_LIB", "WX_LIB", "{F4BA081C-B6BE-4EA7-87F9-783252A9BFFA}"
-	ProjectSection(SolutionItems) = preProject
-		wx\control.h = wx\control.h
-		wx\defs.h = wx\defs.h
-		wx\dialog.h = wx\dialog.h
-		wx\dll.inl = wx\dll.inl
-		wx\file.h = wx\file.h
-		wx\msg.inl = wx\msg.inl
-		wx\msg_ctl.inl = wx\msg_ctl.inl
-		wx\realtime.h = wx\realtime.h
-		wx\resource.h = wx\resource.h
-		wx\security.h = wx\security.h
-		wx\type.h = wx\type.h
-		wx\window.h = wx\window.h
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimRemote", "SimRemote", "{5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}"
-	ProjectSection(SolutionItems) = preProject
-		SimHost.h = SimHost.h
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimDisp Remote", "SimDisp Remote", "{5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimClient", "workspaces\SimClient.vcxproj", "{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -41,6 +16,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimHost", "workspaces\SimHo
 	ProjectSection(ProjectDependencies) = postProject
 		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E} = {1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wx_library", "wx_library", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{0AB8472B-5DC1-4E10-A0F5-4429418E4EC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prv_inc", "prv_inc", "{5DBEA233-80C1-4264-9616-1AF864C98C4A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pub_inc", "pub_inc", "{81AD5D8E-C05F-47CC-8E82-F728B4A71903}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,22 +53,6 @@ Global
 		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x64.Build.0 = Release|x64
 		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x86.ActiveCfg = Release|Win32
 		{1A6597D6-ED10-4AA9-BCB4-71FEE1A6BA3E}.Release|x86.Build.0 = Release|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug LLVM|x86.Build.0 = Debug LLVM|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x64.ActiveCfg = Debug|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x64.Build.0 = Debug|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x86.ActiveCfg = Debug|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Debug|x86.Build.0 = Debug|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x64.ActiveCfg = Release LLVM|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x64.Build.0 = Release LLVM|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x86.ActiveCfg = Release LLVM|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release LLVM|x86.Build.0 = Release LLVM|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x64.ActiveCfg = Release|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x64.Build.0 = Release|x64
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x86.ActiveCfg = Release|Win32
-		{7B9801CA-90FF-42E4-9828-8DA0342220AF}.Release|x86.Build.0 = Release|Win32
 		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x64.ActiveCfg = Debug LLVM|x64
 		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x64.Build.0 = Debug LLVM|x64
 		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8}.Debug LLVM|x86.ActiveCfg = Debug LLVM|Win32
@@ -125,6 +92,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D977C0AE-A9EE-467F-AE96-E4AD49702BF8} = {5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}
 		{D317B3B6-57D9-4688-BFCD-AF3815E79250} = {5E9724BD-1A41-4C2E-AD4B-A8395E74F25C}
+		{0AB8472B-5DC1-4E10-A0F5-4429418E4EC3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5DBEA233-80C1-4264-9616-1AF864C98C4A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{81AD5D8E-C05F-47CC-8E82-F728B4A71903} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {43DAFE10-07D2-40B0-B65B-59A133ED7FA2}
