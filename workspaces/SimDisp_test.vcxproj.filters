@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\SimClient.cpp" />
+    <ClCompile Include="SimDisp_test.cpp" />
     <ClCompile Include="..\wx_library\wx.console.cppm">
       <Filter>wx_library\modules</Filter>
     </ClCompile>
@@ -40,36 +40,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="resources">
-      <UniqueIdentifier>{dd82b562-2000-423d-9c22-344b6cccb59c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="wx_library">
-      <UniqueIdentifier>{374ca4a9-eb81-4819-b1f0-684996b98eb1}</UniqueIdentifier>
+      <UniqueIdentifier>{7ea63676-dc87-433a-9fc7-a28860780529}</UniqueIdentifier>
     </Filter>
     <Filter Include="wx_library\modules">
-      <UniqueIdentifier>{3e641beb-665f-4b4d-b7e6-26dfb979fba2}</UniqueIdentifier>
+      <UniqueIdentifier>{69b9eb40-8a72-4aca-97c3-8448abdc7a9f}</UniqueIdentifier>
     </Filter>
     <Filter Include="wx_library\pub_inc">
-      <UniqueIdentifier>{6b85c26d-aaba-44b9-b949-226f8428d125}</UniqueIdentifier>
+      <UniqueIdentifier>{5e4db9e1-ace5-405d-8b0e-e9e982d1b30f}</UniqueIdentifier>
     </Filter>
     <Filter Include="wx_library\prv_inc">
-      <UniqueIdentifier>{523dd07f-f3f5-4ddb-963c-dda52e2202dd}</UniqueIdentifier>
+      <UniqueIdentifier>{51763961-7cf2-4e45-879d-91f9a18dc96f}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\resources\resource.h">
-      <Filter>resources</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\resources\SimClient.rc">
-      <Filter>resources</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\resources\SimDisp.ico">
-      <Filter>resources</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\wx_library\wx_console">
