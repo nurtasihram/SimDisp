@@ -110,6 +110,9 @@
       <Filter>wx_library\pub_inc</Filter>
     </None>
     <None Include="..\SimDisp.inl" />
+    <None Include="..\wx_library\wx_security">
+      <Filter>wx_library\pub_inc</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\resources\SimDisp.ico">

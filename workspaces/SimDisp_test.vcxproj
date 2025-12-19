@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -183,6 +183,7 @@
     <None Include="..\wx_library\wx_main" />
     <None Include="..\wx_library\wx_realtime" />
     <None Include="..\wx_library\wx_resource" />
+    <None Include="..\wx_library\wx_security" />
     <None Include="..\wx_library\wx_type" />
     <None Include="..\wx_library\wx_window" />
     <None Include="..\wx_library\wx__msg.inl" />
