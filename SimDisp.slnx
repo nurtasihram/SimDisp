@@ -1,0 +1,52 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Remote/">
+    <Project Path="workspaces/SimClient.vcxproj" Id="b872dc9d-ffe9-4e14-93f4-fedcada956af">
+      <BuildDependency Project="workspaces/SimHost.vcxproj" />
+    </Project>
+    <Project Path="workspaces/SimHost.vcxproj" Id="29611de1-b067-441d-8ab4-e0203dbeef6c" />
+  </Folder>
+  <Folder Name="/wx_library/" />
+  <Folder Name="/wx_library/module/">
+    <File Path="wx_library/wx.console.cppm" />
+    <File Path="wx_library/wx.control.cppm" />
+    <File Path="wx_library/wx.cppm" />
+    <File Path="wx_library/wx.dialog.cppm" />
+    <File Path="wx_library/wx.file.cppm" />
+    <File Path="wx_library/wx.gdi.cppm" />
+    <File Path="wx_library/wx.proto.cppm" />
+    <File Path="wx_library/wx.realtime.cppm" />
+    <File Path="wx_library/wx.resource.cppm" />
+    <File Path="wx_library/wx.security.cppm" />
+    <File Path="wx_library/wx.type.cppm" />
+    <File Path="wx_library/wx.window.cppm" />
+  </Folder>
+  <Folder Name="/wx_library/prv_inc/">
+    <File Path="wx_library/wx_defs.h" />
+    <File Path="wx_library/wx__msg.inl" />
+    <File Path="wx_library/wx__msg_ctl.inl" />
+    <File Path="wx_library/wx__rm.inl" />
+  </Folder>
+  <Folder Name="/wx_library/pub_inc/">
+    <File Path="wx_library/wx_console" />
+    <File Path="wx_library/wx_control" />
+    <File Path="wx_library/wx_dialog" />
+    <File Path="wx_library/wx_dll" />
+    <File Path="wx_library/wx_file" />
+    <File Path="wx_library/wx_gdi" />
+    <File Path="wx_library/wx_main" />
+    <File Path="wx_library/wx_realtime" />
+    <File Path="wx_library/wx_resource" />
+    <File Path="wx_library/wx_security" />
+    <File Path="wx_library/wx_type" />
+    <File Path="wx_library/wx_window" />
+  </Folder>
+  <Project Path="workspaces/SimDisp.vcxproj" Id="93912cf3-7abc-442b-884f-479fb97ae508" />
+  <Project Path="workspaces/SimDisp_test.vcxproj" Id="41677a87-fb1c-422a-b301-5d0713b2b463">
+    <BuildDependency Project="workspaces/SimClient.vcxproj" />
+    <BuildDependency Project="workspaces/SimDisp.vcxproj" />
+  </Project>
+</Solution>

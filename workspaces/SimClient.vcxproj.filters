@@ -1,84 +1,93 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\SimClient.cpp" />
-    <ClCompile Include="..\wx_library\wx.console.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.control.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.dialog.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.file.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.gdi.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.proto.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.realtime.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.resource.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.security.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.type.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wx_library\wx.window.cppm">
-      <Filter>wx_library\modules</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="resources">
-      <UniqueIdentifier>{dd82b562-2000-423d-9c22-344b6cccb59c}</UniqueIdentifier>
+      <UniqueIdentifier>{d015b0f1-29e3-444c-b5d0-0799ae6e9e17}</UniqueIdentifier>
     </Filter>
     <Filter Include="wx_library">
-      <UniqueIdentifier>{374ca4a9-eb81-4819-b1f0-684996b98eb1}</UniqueIdentifier>
+      <UniqueIdentifier>{6a6e5601-575a-405d-9443-9f6fb1e136cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="wx_library\modules">
-      <UniqueIdentifier>{3e641beb-665f-4b4d-b7e6-26dfb979fba2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wx_library\pub_inc">
-      <UniqueIdentifier>{6b85c26d-aaba-44b9-b949-226f8428d125}</UniqueIdentifier>
+    <Filter Include="wx_library\module">
+      <UniqueIdentifier>{9108bde0-bec5-4f2b-9386-bea1267438fd}</UniqueIdentifier>
     </Filter>
     <Filter Include="wx_library\prv_inc">
-      <UniqueIdentifier>{523dd07f-f3f5-4ddb-963c-dda52e2202dd}</UniqueIdentifier>
+      <UniqueIdentifier>{df005330-cc8e-42e7-86d6-79753169f754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wx_library\pub_inc">
+      <UniqueIdentifier>{3498062e-cec4-4a85-baeb-00924a06aad4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\wx_library\wx.console.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.control.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.dialog.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.file.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.gdi.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.proto.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.realtime.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.resource.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.security.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.type.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wx_library\wx.window.cppm">
+      <Filter>wx_library\module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SimClient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\wx_library\wx_defs.h">
+      <Filter>wx_library\prv_inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SimDisp.h" />
     <ClInclude Include="..\resources\resource.h">
       <Filter>resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\resources\SimClient.rc">
-      <Filter>resources</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\resources\SimDisp.ico">
-      <Filter>resources</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="..\wx_library\wx__msg.inl">
+      <Filter>wx_library\prv_inc</Filter>
+    </None>
+    <None Include="..\wx_library\wx__msg_ctl.inl">
+      <Filter>wx_library\prv_inc</Filter>
+    </None>
+    <None Include="..\wx_library\wx__rm.inl">
+      <Filter>wx_library\prv_inc</Filter>
+    </None>
     <None Include="..\wx_library\wx_console">
+      <Filter>wx_library\pub_inc</Filter>
+    </None>
+    <None Include="..\wx_library\wx_control">
       <Filter>wx_library\pub_inc</Filter>
     </None>
     <None Include="..\wx_library\wx_dialog">
       <Filter>wx_library\pub_inc</Filter>
     </None>
     <None Include="..\wx_library\wx_dll">
+      <Filter>wx_library\pub_inc</Filter>
+    </None>
+    <None Include="..\wx_library\wx_file">
       <Filter>wx_library\pub_inc</Filter>
     </None>
     <None Include="..\wx_library\wx_gdi">
@@ -99,29 +108,11 @@
     <None Include="..\wx_library\wx_window">
       <Filter>wx_library\pub_inc</Filter>
     </None>
-    <None Include="..\wx_library\wx__conio.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__gdi.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__msg.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__msg_ctl.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__realtime.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__resource.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__rm.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
-    <None Include="..\wx_library\wx__type.inl">
-      <Filter>wx_library\prv_inc</Filter>
-    </None>
+    <None Include="..\SimDisp.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources\SimClient.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

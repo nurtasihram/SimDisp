@@ -16,12 +16,13 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
-#include "wx_console.h"
-#include "wx_window.h"
-#include "wx_control.h"
-#include "wx_dialog.h"
-#include "wx_realtime.h"
-#include "wx_file.h"
+#include "wx_console"
+#include "wx_window"
+#include "wx_control"
+#include "wx_dialog"
+#include "wx_realtime"
+#include "wx_file"
+#include "wx_security"
 
 #define DLL_EXPORTS
 #include "SimDisp.h"
@@ -66,10 +67,10 @@ static DC &TayKit(DC &dc, LPoint org, int r) {
 static Icon makeIcon(int size) {
 	Bitmap bmpColor = Bitmap().Create(size);
 	Bitmap bmpMask = Bitmap::Create(size).BitsPerPixel(1);
-	TayKit(WX::DC::CreateCompatible()(bmpColor)
-		   .Fill(Brush::Black()), size / 2, size / 2);
-	DC::CreateCompatible()(bmpMask)
-		.Fill(Brush::White())
+	auto &&dc = DC::CreateCompatible();
+	TayKit(dc(bmpColor).Fill(Brush::Black()), size / 2, size / 2);
+	dc
+		(bmpMask).Fill(Brush::White())
 		(Brush::Black()).DrawEllipse({ 0, 0, size, size });
 	return Icon::Create(bmpColor, bmpMask);
 };
@@ -103,7 +104,7 @@ private:
 		class MyBitmap : public IWICBitmapLock {
 
 			/// @brief 位圖尺寸
-			LSize size = { GetSystemMetrics(SM_CXSCREEN) + 1, GetSystemMetrics(SM_CYSCREEN) + 1 };
+			LSize size{ ::GetSystemMetrics(SM_CXSCREEN) + 1, ::GetSystemMetrics(SM_CYSCREEN) + 1 };
 
 			/// @brief 内存映射文件
 			///		命名的内存映射文件，用扵跨進程共享位圖色彩緩衝區
@@ -182,20 +183,13 @@ private:
 	public:
 		GraphPanel(SimDispWnd &parent) : parent(parent) {}
 
-	public:
-		inline auto Create() {
-			return super::Create()
-				.Parent(parent)
-				.Styles(WS::Child | WS::Visible);
-		}
-
 #pragma region Events
 	private: // 窗體事件組
 
 		/// @brief 創建窗體事件
 		///		初始化Direct2D對象
 		/// @return 是否建制成功
-		inline bool OnCreate(RefAs<CreateStruct *>) {
+		inline bool OnCreate() {
 			assertl(SUCCEEDED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2D_Factory)));
 			assertl(SUCCEEDED(CoCreateInstance(
 				CLSID_WICImagingFactory,
@@ -217,7 +211,7 @@ private:
 		/// @brief 窗體繪製事件
 		///		渲染Direct2D圖像
 		inline void OnPaint() {
-			auto &&ps = BeginPaint();
+			// auto &&ps = BeginPaint();
 			if (RenderTarget->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED)
 				return;
 			OnRender();
@@ -240,11 +234,11 @@ private:
 			if (!bHideCursor)
 				return false;
 			if (!bMaskMouse) {
-				SetCursor(O);
+		//		SetCursor(O);
 				return true;
 			}
-			static auto &&CursorNo = Module()->Cursor(IDC_NO);
-			SetCursor(CursorNo);
+		//	static auto &&CursorNo = Module()->Cursor(IDC_NO);
+		//	SetCursor(CursorNo);
 			return true;
 		}
 
@@ -253,8 +247,8 @@ private:
 		/// @param y 窗體内光標y
 		/// @param keyFlags 鼠標鍵
 		inline void OnMouseMove(int x, int y, UINT keyFlags) {
-			if (TrackMouse().Flags(TME::Flag::Hover | TME::Flag::Leave))
-				parent.OnPanelMouse(x, y, keyFlags);
+			TrackMouse().Flags(TME::Flag::Hover | TME::Flag::Leave).Track();
+			parent.OnPanelMouse(x, y, keyFlags);
 		}
 		inline void OnLButtonUp(int x, int y, UINT keyFlags) { parent.OnPanelMouse(x, y, keyFlags); }
 		inline void OnMButtonUp(int x, int y, UINT keyFlags) { parent.OnPanelMouse(x, y, keyFlags); }
@@ -264,7 +258,7 @@ private:
 		inline void OnRButtonDown(int x, int y, UINT keyFlags) { parent.OnPanelMouse(x, y, keyFlags); }
 		inline void OnMouseLeave() { parent.OnPanelMouse(-1, -1, 0); }
 		inline void OnMouseWheel(int x, int y, int z, UINT fwKeys) {
-			auto &&pt = ScreenToClient({ x, y });
+			auto &&pt = Screen2Client({ x, y });
 			parent.OnPanelMouse(pt.x, pt.y, fwKeys, z);
 		}
 #pragma endregion
@@ -289,14 +283,16 @@ private:
 		/// @param lpFilename 文件名
 		/// @return 是否保存成功
 		inline bool SaveToFile(LPCTSTR lpFilename) {
-			try {
+			try {/*
 				::SaveToFile(
 					DC(),
 					Palette::Default(),
 					ClipBitmap(
 						Bitmap::Create(MaxSize()).Colors(Colors()),
 						Size()),
-					File::Create(lpFilename).CreateAlways().Accesses(FileAccess::GenericWrite));
+					File::Create(lpFilename)
+						.CreateAlways()
+						.Accesses(FileAccess::GenericWrite));*/
 				return true;
 			} catch (WX::Exception err) {
 				parent.MsgBox(_T("Save to file error"), err.operator String(), MB::IconError);
@@ -334,42 +330,34 @@ private: // 預建制
 		IDM_ABOUT
 	};
 	/// @brief 主要功能選單
-	WX::Menu menu;
-	WxClass() {
-		xClass() {
-			Icon(makeIcon(128));
-			//IconSmall(makeIcon(48));
-		}
-	};
+	WX::Menu menu = WX::Menu()
+		.Popup(_T("&Screen"), MenuPopup()
+			   .String(_T("&Print Screen"), IDM_PRINTSCREEN)
+			   .Separator()
+			   .String(_T("&Resize Screen"), IDM_RESIZE, bResizeable)
+			   .String(_T("&Invert Screen"), IDM_INVERT, bResizeable)
+			   .Separator()
+			   .String(_T("Show C&onsole"), IDM_HIDECONSOLE, bConsole)
+			   .String(_T("Show &Keyboard Map"), IDM_KEYBOARDMAP)
+			   .Separator()
+			   .Popup(_T("&Cursor Control"), MenuPopup()
+					  .Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false, true)
+					  .Check(_T("&Lock Mouse On Screen"), IDM_LOCKCURSOR))
+			   .Separator()
+			   .String(_T("&Exit"), IDM_EXIT))
+		.Popup(_T("&Event"), MenuPopup()
+			   .Check(_T("Mask &Mouse Event"), IDM_MASK_MOUSE, panel.bMaskMouse)
+			   .Check(_T("Mask &Touch Event"), IDM_MASK_TOUCH, panel.bMaskTouch)
+			   .Check(_T("Mask &Keyboard Event"), IDM_MASK_KEYBOARD, panel.bMaskKeyboard))
+		.Popup(_T("&Help"), MenuPopup()
+			   .String(_T("&About"), IDM_ABOUT));
 
-public:
-	inline auto Create() {
-		return super::Create()
-			.Styles(WS::MinimizeBox | WS::Caption | WS::SysMenu | WS::ClipChildren)
-			.Size(500)
-			.Position(100)
-			.Menu(menu
-				  .Popup(_T("&Screen"), MenuPopup()
-						 .String(_T("&Print Screen"), IDM_PRINTSCREEN)
-						 .Separator()
-						 .String(_T("&Resize Screen"), IDM_RESIZE, bResizeable)
-						 .String(_T("&Invert Screen"), IDM_INVERT, bResizeable)
-						 .Separator()
-						 .String(_T("Show C&onsole"), IDM_HIDECONSOLE, bConsole)
-						 .String(_T("Show &Keyboard Map"), IDM_KEYBOARDMAP)
-						 .Separator()
-						 .Popup(_T("&Cursor Control"), MenuPopup()
-								.Check(_T("&Hide Cursor On Screen"), IDM_HIDECURSOR, false, true)
-								.Check(_T("&Lock Mouse On Screen"), IDM_LOCKCURSOR))
-						 .Separator()
-						 .String(_T("&Exit"), IDM_EXIT))
-				  .Popup(_T("&Event"), MenuPopup()
-						 .Check(_T("Mask &Mouse Event"), IDM_MASK_MOUSE, panel.bMaskMouse)
-						 .Check(_T("Mask &Touch Event"), IDM_MASK_TOUCH, panel.bMaskTouch)
-						 .Check(_T("Mask &Keyboard Event"), IDM_MASK_KEYBOARD, panel.bMaskKeyboard))
-				  .Popup(_T("&Help"), MenuPopup()
-						 .String(_T("&About"), IDM_ABOUT)));
-	}
+//	WxClass() {
+//		xClass() {
+//			Icon(makeIcon(128));
+///		//IconSmall(makeIcon(48));
+//		}
+//	};
 #pragma endregion
 
 #pragma region Events
@@ -381,13 +369,15 @@ private:
 	/// @brief 創建窗體事件
 	/// @param lpCreate 創建結構指針
 	/// @return 是否建制成功
-	inline bool OnCreate(RefAs<CreateStruct *> lpCreate) {
-		assertl(sbar.Create(self));
-		assertl(panel.Create()
-			   .Position(Border.left_top())
-			   .Size(lpCreate->Size() - LSize(1)));
+	inline bool OnCreate() {
+		sbar.Create(self);
+		panel.Create()
+			 .Parent(self)
+			 .Styles(WS::Child | WS::Visible)
+			 .Position(Border.left_top())
+			 .Size(Size() - LSize(1));
 		sbar.Visible(true);
-		Size(AdjustRect(lpCreate->Size() + Border.right_bottom() + Border.left_top() + LPoint(0, sbar.Size().cy)));
+		Size(AdjustRect(Size() + Border.right_bottom() + Border.left_top() + LPoint(0, sbar.Size().cy)));
 		uIDTimer_FlushPriod = SetTimer(1, 12);
 		return true;
 	}
@@ -405,7 +395,7 @@ private:
 			wCon.Styles(WS::Visible | WS::OverlappedWindow);
 		if (pfnOnClose)
 			pfnOnClose();
-		PostQuitMessage(0);
+		::PostQuitMessage(0);
 	}
 
 	/// @brief 尺寸改變後事件
@@ -450,17 +440,17 @@ private:
 			 bCapsLock = false,
 			 bScroll = false;
 		void OnTimer(UINT id) {
-			bool bNumLock = GetKeyState(VK_NUMLOCK);
+			bool bNumLock = ::GetKeyState(VK_NUMLOCK);
 			if (this->bNumLock != bNumLock) {
 				Item<Button>(IDC_LED_NUM).Invalidate();
 				this->bNumLock = bNumLock;
 			}
-			bool bCapsLock = GetKeyState(VK_CAPITAL);
+			bool bCapsLock = ::GetKeyState(VK_CAPITAL);
 			if (this->bCapsLock != bCapsLock) {
 				Item<Button>(IDC_LED_CAPS).Invalidate();
 				this->bCapsLock = bCapsLock;
 			}
-			bool bScroll = GetKeyState(VK_SCROLL);
+			bool bScroll = ::GetKeyState(VK_SCROLL);
 			if (this->bScroll != bScroll) {
 				Item<Button>(IDC_LED_SCROLL).Invalidate();
 				this->bScroll = bScroll;
@@ -689,96 +679,6 @@ private: // 自定義子事件
 
 	/// @brief 開啓重設大小對話框
 	inline void OnResizeBox() {
-
-		/// @brief 重設大小對話框類
-		class BaseOf_Dialog(ResizeBox) {
-			SFINAE_Dialog(ResizeBox);
-		public:
-
-			/// @brief 新大小
-			LSize size;
-			ResizeBox(LSize size) : size(size) {}
-
-#pragma region Precreate
-		private: // 預建制
-			/// @brief 
-			enum { IDE_CX = 0x20, IDE_CY };
-			static inline LPDLGTEMPLATE Forming() {
-				static auto &&hDlg = DFact()
-					.Style(WS::Caption | WS::SysMenu | WS::Popup)
-					.Caption(L"New size")
-					.Size({ 145, 75 })
-					.Add(DCtl(L"&X:")
-						 .Style(WS::Child | WS::Visible | StaticStyle::CenterImage)
-						 .Position({ 24, 12 }).Size({ 14, 14 }))
-					.Add(DCtl(DClass::Edit)
-						 .Style(WS::Child | WS::Visible | WS::TabStop | EditStyle::Number)
-						 .Position({ 42, 12 }).Size({ 72, 14 })
-						 .ID(IDE_CX))
-					.Add(DCtl(L"&Y:")
-						 .Style(WS::Child | WS::Visible | StaticStyle::CenterImage)
-						 .Position({ 24, 30 }).Size({ 72, 14 }))
-					.Add(DCtl(DClass::Edit)
-						 .Style(WS::Child | WS::Visible | WS::TabStop | EditStyle::Number)
-						 .Position({ 42,30 }).Size({ 72, 14 })
-						 .ID(IDE_CY))
-					.Add(DCtl(L"&OK", DClass::Button)
-						 .Style(WS::Child | WS::Visible | WS::TabStop)
-						 .Position({ 18, 48 }).Size({ 50, 14 })
-						 .ID(IDOK))
-					.Add(DCtl(L"&Cancel", DClass::Button)
-						 .Style(WS::Child | WS::Visible | WS::TabStop)
-						 .Position({ 72, 48 }).Size({ 50, 14 })
-						 .ID(IDCANCEL)).Make();
-				return &hDlg;
-			}
-#pragma endregion
-
-#pragma region Event
-		private:
-
-			/// @brief 對話框初始化事件
-			inline bool InitDialog() {
-				Item(IDE_CX).Int(size.cx);
-				Item(IDE_CY).Int(size.cy);
-				return true;
-			}
-
-			/// @brief 窗體指令響應事件
-			/// @param id 指令ID
-			/// @param hwndCtl 控件句柄
-			/// @param codeNotify 提示碼
-			inline void OnCommand(int id, HWND hwndCtl, UINT codeNotify) {
-				switch (id) {
-					case IDOK: {
-						LSize sz = { Item(IDE_CX).Int(), Item(IDE_CY).Int() };
-						if (size != sz) size = sz;
-						else id = IDCANCEL;
-					}
-					case IDCANCEL:
-						End(id);
-						break;
-					default:
-						break;
-				}
-			}
-
-			/// @brief 窗體關閉事件
-			inline void OnClose() reflect_to(End(IDCANCEL));
-
-			/// @brief 異常捕捉事件
-			/// @param err 例外信息包
-			inline void OnCatch(const Exception &err) {
-				MsgBox(_T("Dialog error"), _T("Invalid input"), MB::IconError);
-				End(IDCANCEL);
-			}
-#pragma endregion
-
-		} rsBox = panel.Size();
-		if (rsBox.Box(self) != IDOK)
-			return;
-		if (!Resize(rsBox.size))
-			MsgBox(_T("Dialog error"), _T("Resize failed"), MB::IconError);
 	}
 #pragma endregion
 
@@ -798,10 +698,10 @@ public: // 一般操作
 				   time.Year(), time.Month(), time.Day(),
 				   time.Hour(), time.Minute(), time.Second())
 			.Resize(MAX_PATH * 2);
-		if (!FileChoose()
+		if (!DlgFile()
+			.Owner(self)
 			.File(file)
-			.Parent(self)
-			.Styles(FileChooseStyle::Explorer)
+			.Styles(DlgFileStyle::Explorer)
 			.Title(_T("Printscreen to bitmap"))
 			.Filter(_T("Bitmap file (*.bmp)\0*.bmp*\0\0"))
 			.SaveFile())
@@ -888,7 +788,7 @@ public:
 			wCon.Styles(wCon.Styles() & ~WS::Visible);
 		wCon.Position(Rect().left_bottom())
 			.Size({ Size().cx, wCon.Size().cy });
-		Console.Reopen();
+		Console.Select();
 		if (menu)
 			menu(IDM_HIDECONSOLE).Check(bOpen);
 	}
@@ -993,8 +893,11 @@ protected:
 
 	inline void WndCreate() {
 		pWndSiDi = new SimDispWnd;
-		if (!pWndSiDi->Create().Size({ xSize, ySize }).Caption(lpszTitle))
-			return;
+		pWndSiDi->Create()
+			.Caption(lpszTitle)
+			.Styles(WS::MinimizeBox | WS::Caption | WS::SysMenu | WS::ClipChildren)
+			// .Menu(menu)
+			.Size({ xSize, ySize });
 		pWndSiDi->Update();
 		evtInited.Set();
 	}
@@ -1045,7 +948,9 @@ public:
 			delete pWndSiDi;
 			pWndSiDi = O;
 		}
-		TerminateWait(1000);
+		Wait(1000);
+		if (StillActive())
+			Terminate();
 	}
 
 	/// @brief 等待用戶關閉
@@ -1056,7 +961,7 @@ public:
 			Terminate();
 			return;
 		}
-		WaitForSignal();
+		Wait();
 		delete pWndSiDi;
 		pWndSiDi = O;
 	}
@@ -1070,9 +975,8 @@ public:
 		this->lpszTitle = lpszTitle;
 		this->xSize = xSize;
 		this->ySize = ySize;
-		if (!super::Create().Security(InheritHandle))
-			return false;
-		evtInited.WaitForSignal();
+		super::Create().Security(InheritHandle);
+		evtInited.Wait();
 		return !bError;
 	}
 

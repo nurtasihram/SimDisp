@@ -1,6 +1,6 @@
 ﻿
 
-#include "wx_realtime.h"
+#include "wx_realtime"
 
 #define SIMDISP_HOST
 #include "SimHost.h"
@@ -21,7 +21,7 @@ namespace SimDispClient {
 	Event eventDone; // 完成事件
 
 	struct BaseOf_Thread(EventBox) {
-		void OnStart() {
+		void OnRun() {
 			Message msg;
 			/* 初始化擋墻綫程的消息序列 */
 			assertl(!msg.PeekThread());
@@ -45,7 +45,7 @@ namespace SimDispClient {
 
 	Event eventClose;
 	struct BaseOf_Thread(Watchdog) {
-		void OnStart() {
+		void OnRun() {
 			eventClose.WaitForSignal();
 			::Close();
 		}
@@ -57,7 +57,7 @@ namespace SimDispClient {
 	tSimDisp_OnResize _lpfnOnResize = O; // 窗體重設尺寸響應事件類
 	/// @brief 活動盒綫程類
 	struct BaseOf_Thread(ActionBox) {
-		void OnStart() {
+		void OnRun() {
 			Message msg;
 			/* 初始化綫程的消息序列 */
 			assertl(!msg.PeekThread());

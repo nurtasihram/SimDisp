@@ -1,4 +1,4 @@
-﻿#include "wx_realtime.h"
+﻿#include "wx_realtime"
 
 #define SIMDISP_HOST
 #define DLL_IMPORTS 1
@@ -15,21 +15,23 @@ namespace SimDispHost {
 	Thread actionBoxClient; // 客戶端活動盒綫程
 	Thread eventBoxClient; // 客戶端事件盒綫程
 
-	LThread watchdog = [] { // 看門狗綫程
-		try {
-			/* 等待宿主綫程執行完成 */
-			eventBoxClient.WaitForSignal();
-		} catch (Exception err) {
-			MsgBox(_T("Error"), err.operator String(), MB::IconError);
+	struct BaseOf_Thread(Watchdog) {
+		static void OnRun() {
+			try {
+				/* 等待宿主綫程執行完成 */
+				eventBoxClient.Wait();
+			} catch (Exception err) {
+				MsgBox(_T("Error"), err.operator String(), MB::IconError);
+			}
+			/* 結束宿主進程 */
+			Process::Exit();
 		}
-		/* 結束宿主進程 */
-		Process::Exit();
-	};
+	} watchdog; // 看門狗綫程
 
 	Message eventRet; // 事件返迴消息
 	/// @brief 事件盒綫程
 	struct BaseOf_Thread(EventBox) {
-		void OnStart() {
+		static void OnRun() {
 			/* 獲取綫程消息 */
 			while (eventRet.GetThread()) {
 				/* 阻塞客戶端事件響應 */

@@ -39,7 +39,7 @@ typedef uint8_t(*tSimDisp_OnResize)(uint16_t nSizeX, uint16_t nSizeY);
 
 #define DLL_INL_LIST "SimDisp.inl"
 #define MOD_NAME SimDisp
-#include "wx_dll.inl"
+#include "wx_dll"
 
 #ifdef USE_AYXANDAR
 #	undef USE_AYXANDAR
